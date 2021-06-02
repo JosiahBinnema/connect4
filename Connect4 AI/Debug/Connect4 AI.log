@@ -1,0 +1,3 @@
+﻿  Connect4 AI.cpp
+c:\users\josiah binnema\working files\school\general\c++ files\connect4 ai\connect4 ai\connect4 ai.cpp(287): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  Connect4 AI.vcxproj -> C:\Users\Josiah Binnema\Working Files\School\General\C++ Files\Connect4 AI\Debug\Connect4 AI.exe
