@@ -1,5 +1,5 @@
 # Josiah's connect 4 ai  
----
+
 This is my best attempt at a connect 4 ai (just for fun)
 
 
