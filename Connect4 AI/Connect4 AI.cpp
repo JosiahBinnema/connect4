@@ -32,7 +32,7 @@ public:
 
 class Board {
 public:
-	char board[6][7] = { { ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
+	char board[6][7] =    { { ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
 							{ ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
 							{ ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
 							{ ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
@@ -52,10 +52,19 @@ public:
 		}
 	}
 
-	// Check to see if the move is a playable move
-	// 
-	// Parameter column - the column to check for availability. Starts at 0
-	// return			- true if move can be played, false if not.
+	void setHeights(int newHeights[7]) {
+		for (int k = 0; k < 7; k++) {
+			heights[k] = newHeights[k];
+		}
+	}
+
+	void setBoard(char newBoard[6][7]) {
+		for (int i = 0; i < 6; i++) {
+			for (int j = 0; j < 7; j++) {
+				board[i][j] = newBoard[i][j];
+			}
+		}
+	}
 
 	bool isValid(int column) {
 		if (column > 6) {
@@ -120,7 +129,6 @@ public:
 		}
 		return connected;
 	}
-
 	int horizontalWin(int column, char playerColor) {
 		int connected = 1;
 		int temp = heights[column];
@@ -186,8 +194,6 @@ public:
 		}
 		return connected;
 	}
-
-
 };
 
 class Computer : public Player {
@@ -206,7 +212,6 @@ public:
 		name[7] = number;
 		this->isAI = true;
 	}
-
 	int aDiagonalVal(int column, Board board) {						// ascending diagonal value for connections. (All ___Val are clones of each other)
 		if (board.aDiagonalWin(column, this->color) == 2) {
 			return connect2Value;
@@ -221,7 +226,6 @@ public:
 			return connect1Value;
 		}
 	}
-
 	int dDiagonalVal(int column, Board board) {						// Descending diagonal value for connections. (All ___Val are clones of each other)
 		if (board.dDiagonalWin(column, this->color) == 2) {
 			return connect2Value;
@@ -247,7 +251,7 @@ public:
 			return connect4value;
 		}
 		else {
-			return connect1Value;
+			return connect1Value; 
 		}
 	}
 	int verticalVal(int column, Board board) {						//  Vertical value for connections. (All ___Val are clones of each other)
@@ -264,7 +268,6 @@ public:
 			return connect1Value;
 		}
 	}
-
 	int columnVal(int column) {			// for the raw column values, no connections included // should be private
 
 		if (column == 3) {
@@ -298,6 +301,28 @@ public:
 		std::cout << "total value of column " << column << " is " << value << "\n";
 		return value;
 	}
+
+	int getBestTurn(Board board, Player player, Player enemyPlayer) { // returns the column with the best score (eventually)
+		int maxTurnVal = -999;
+		int bestColumn;
+		for (int i = 0; i < 7; i++) {
+			std::cout << "\n\n Evaluating column " << i << "\n";
+			if (board.isValid(i)) {
+				Board board2;
+				board2.setHeights(board.heights);
+				board2.setBoard(board.board);
+				board2.play(i, player);
+				board2.print();
+				int val = evaluateColumn(i, board);
+				if (val > maxTurnVal) {
+					maxTurnVal = val;
+					bestColumn = i;
+				}
+			}
+		}
+		std::cout << "\n\n BEST COLUMN FOUND IS  " << bestColumn << " WITH VALUE " << maxTurnVal << "\n";
+		return bestColumn;
+	}
 };
 
 
@@ -320,17 +345,10 @@ int main() {
 		}
 
 		if (currentPlayer.isAI) {
-			for (int i = 0; i < 6; i++) {
-				std::cout << "\n\n Evaluating column " << i << "\n";
-				if (board.isValid(i)) {
-					player2.evaluateColumn(i, board);
-				}
-				else {
-					std::cout << i <<" is an invalid column \n";
-				}
-			}
+			player2.getBestTurn(board, player2,player1);
 		}
 
+		board.print();
 		std::cout << "Enter your next move ";
 		currentPlayer.printName();
 		std::cout << "\n";
