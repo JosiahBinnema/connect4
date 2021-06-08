@@ -9,15 +9,18 @@
 class Player {			//should be private with get/set
 public:
 	char color;
+	bool isAI;
 	char name [8] = { 'P','l','a','y','e','r',' ',' ' };
-	Player(char color, char number) {	// need to update the constructor if I use it more. 
+	Player(char color, char number, bool isAI) {	// need to update the constructor if I use it more. 
 		this->color = color;
 		name[7] = number;
+		this->isAI = isAI;
 	}
 
 	Player() {
-		color = '?';
-		name[7] = '?';
+		this->color = '?';
+		this->name[7] = '?';
+		this->isAI = true;
 	}
 
 	void printName() {
@@ -191,15 +194,17 @@ class Computer : public Player {
 private:
 	//AI values:
 	int centerValue = 3;
-	int edgePenalty = 1;
+	int edgePenalty = -1;
+	int connect1Value = 0;
 	int connect2Value = 2;
 	int connect3Value = 4;
 	int connect4value = 100;
 
-
-	Computer(char color, char number) {	// need to update the constructor if I use it more. 
+public:
+	Computer(char color, char number,bool other) {	// need to update the constructor if I use it more. 
 		this->color = color;
 		name[7] = number;
+		this->isAI = true;
 	}
 
 	int aDiagonalVal(int column, Board board) {						// ascending diagonal value for connections. (All ___Val are clones of each other)
@@ -211,6 +216,9 @@ private:
 		}
 		else if (board.aDiagonalWin(column, this->color) >= 4) {
 			return connect4value;
+		}
+		else {
+			return connect1Value;
 		}
 	}
 
@@ -224,6 +232,9 @@ private:
 		else if (board.dDiagonalWin(column, this->color) >= 4) {
 			return connect4value;
 		}
+		else {
+			return connect1Value;
+		}
 	}
 	int horizontalVal(int column, Board board) {						//  Horizontal value for connections. (All ___Val are clones of each other)
 		if (board.horizontalWin(column, this->color) == 2) {
@@ -234,6 +245,9 @@ private:
 		}
 		else if (board.horizontalWin(column, this->color) >= 4) {
 			return connect4value;
+		}
+		else {
+			return connect1Value;
 		}
 	}
 	int verticalVal(int column, Board board) {						//  Vertical value for connections. (All ___Val are clones of each other)
@@ -246,6 +260,9 @@ private:
 		else if (board.verticalWin(column, this->color) >= 4) {
 			return connect4value;
 		}
+		else {
+			return connect1Value;
+		}
 	}
 
 	int columnVal(int column) {			// for the raw column values, no connections included // should be private
@@ -256,28 +273,29 @@ private:
 		else if (column == 0 || column == 6) {
 			return edgePenalty;
 		}
+		else {
+			return connect1Value;
+		}
 	}
-
-public:
 	int evaluateColumn(int column, Board board) {		// only pass on valid columns 
 
 		int value = 0;
 		value += (aDiagonalVal(column, board));
-		std::cout << "ascending diagonal value is " << (aDiagonalVal(column, board));
+		std::cout << "ascending diagonal value is " << (aDiagonalVal(column, board)) << "\n";
 
 		value += (dDiagonalVal(column, board));
-		std::cout << "descending diagonal value is " << (dDiagonalVal(column, board));
+		std::cout << "descending diagonal value is " << (dDiagonalVal(column, board)) << "\n";
 
 		value += (horizontalVal(column, board));
-		std::cout << "Horizontal value is " << (horizontalVal(column, board));
+		std::cout << "Horizontal value is " << (horizontalVal(column, board)) << "\n";
 
 		value += (verticalVal(column, board));
-		std::cout << "vertical value is " << (verticalVal(column, board));
+		std::cout << "vertical value is " << (verticalVal(column, board)) << "\n";
 
 		value += (columnVal(column));
-		std::cout << "column value is " << (columnVal(column));
+		std::cout << "column value is " << (columnVal(column)) << "\n";
 
-		std::cout << "total value of column " << column << " is " << value;
+		std::cout << "total value of column " << column << " is " << value << "\n";
 		return value;
 	}
 };
@@ -289,20 +307,31 @@ int main() {
 	Board board;
 	int input;
 	int counter = 0;
-	Player player1 = Player('R', '1');
-	Player player2 = Player('B', '2');
+	Player player1 = Player('R', '1', false);
+	Computer player2 = Computer('B', '2', true);
 	board.print();
 
 
 	while (true) {
-//		Computer computer = computer('R', '1');
 
 		Player currentPlayer = player2;
 		if (turn == 0) {
 			currentPlayer = player1;
 		}
 
-		std::cout << "WTF Enter your next move ";
+		if (currentPlayer.isAI) {
+			for (int i = 0; i < 6; i++) {
+				std::cout << "\n\n Evaluating column " << i << "\n";
+				if (board.isValid(i)) {
+					player2.evaluateColumn(i, board);
+				}
+				else {
+					std::cout << i <<" is an invalid column \n";
+				}
+			}
+		}
+
+		std::cout << "Enter your next move ";
 		currentPlayer.printName();
 		std::cout << "\n";
 		std::cin >> input;
@@ -313,11 +342,10 @@ int main() {
 			std::cin >> input;
 		}
 
-		std::cout << "should've ??? \n";
 
 		board.play(input, currentPlayer);
-//		computer.evaluateColumn(input, board);
-		std::cout << "should've worked \n";
+
+		
 		counter++;
 		turn++;
 		turn = turn % 2;
@@ -333,15 +361,3 @@ int main() {
 		board.print();
 	}
 }
-
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
