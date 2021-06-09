@@ -313,7 +313,7 @@ public:
 				board2.setBoard(board.board);
 				board2.play(i, player);
 				board2.print();
-				int val = evaluateColumn(i, board);
+				int val = evaluateColumn(i, board2);
 				if (val > maxTurnVal) {
 					maxTurnVal = val;
 					bestColumn = i;
@@ -345,21 +345,18 @@ int main() {
 		}
 
 		if (currentPlayer.isAI) {
-			player2.getBestTurn(board, player2,player1);
+			input = player2.getBestTurn(board, player2,player1);
 		}
-
-		board.print();
-		std::cout << "Enter your next move ";
-		currentPlayer.printName();
-		std::cout << "\n";
-		std::cin >> input;
-
-
-		while (!(board.isValid(input))) {										// ensure proper input from user
-			std::cout << "Please enter a valid input for your next move\n";
+		else {
+			std::cout << "Enter your next move ";
+			currentPlayer.printName();
+			std::cout << "\n";
 			std::cin >> input;
+			while (!(board.isValid(input))) {										// ensure proper input from user
+				std::cout << "Please enter a valid input for your next move\n";
+				std::cin >> input;
+			}
 		}
-
 
 		board.play(input, currentPlayer);
 
