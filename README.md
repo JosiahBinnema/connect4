@@ -8,7 +8,7 @@ Ideally I'll be able to implement Alpha-beta pruning first, then I'll move on to
 
 Likely I won't get a lot of this done, but if I can make an AI that uses alpha beta pruning and can beat me in connect 4. I'll call that a mad win
 
-June 8 2021 - The AI is born. It evaluates at a depth of 0.5 and only stands a chance if it goes first.
+June 8, 2021 - The AI is born. It evaluates at a depth of 0.5 and only stands a chance if it goes first.
 
 
 
