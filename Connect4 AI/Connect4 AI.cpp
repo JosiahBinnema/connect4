@@ -10,7 +10,7 @@ class Player {			//should be private with get/set
 public:
 	char color;
 	bool isAI;
-	char name [8] = { 'P','l','a','y','e','r',' ',' ' };
+	char name[8] = { 'P','l','a','y','e','r',' ',' ' };
 	Player(char color, char number, bool isAI) {	// need to update the constructor if I use it more. 
 		this->color = color;
 		name[7] = number;
@@ -32,18 +32,16 @@ public:
 
 class Board {
 public:
-	char board[6][7] =    { { ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
+	char board[6][7] = { { ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
 							{ ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
 							{ ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
 							{ ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
 							{ ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
 							{ ' ', ' ', ' ', ' ', ' ', ' ', ' ',} };
-
-	int heights[7] = { 6,6,6,6,6,6,6 };			//remaining room in each column
-
+	int remainingRoom[7] = { 6,6,6,6,6,6,6 };			//remaining room in each column
 	void clear() {
 		for (int k = 0; k < 7; k++) {
-			heights[k] = 6;
+			remainingRoom[k] = 6;
 		}
 		for (int i = 0; i < 6; i++) {
 			for (int j = 0; j < 7; j++) {
@@ -51,13 +49,11 @@ public:
 			}
 		}
 	}
-
 	void setHeights(int newHeights[7]) {
 		for (int k = 0; k < 7; k++) {
-			heights[k] = newHeights[k];
+			remainingRoom[k] = newHeights[k];
 		}
 	}
-
 	void setBoard(char newBoard[6][7]) {
 		for (int i = 0; i < 6; i++) {
 			for (int j = 0; j < 7; j++) {
@@ -65,45 +61,43 @@ public:
 			}
 		}
 	}
-
 	bool isValid(int column) {
 		if (column > 6) {
 			return false;
 		}
-		else if (heights[column] == 0) {
+		else if (remainingRoom[column] == 0) {
 			return false;
 		}
 		return true;
 	}
-
 	// play a move ** should be checked by isValid first **
 	// 
-
 	void play(int column, Player player) {		// column starts at 0 
-		board[(heights[column] - 1)][column] = player.color;
-		heights[column]--;
+		board[(remainingRoom[column] - 1)][column] = player.color;
+		remainingRoom[column]--;
 	}
+	bool isWin(int column, Player player) {			//should be called before the move has been made on the board.
 
-
-	bool isWin(int column, Player player) {			//should be called after the move has been made on the board.
-
-		if (dDiagonalWin(column, player.color) > 3) {				// check for descending diagonal win.
+		if (isDDiagonalWin(column, player.color)) {				// check for descending diagonal win.
+			std::cout << "Descending diagonal win for " << player.color << "\n";
 			return true;
 		}
-		else if (aDiagonalWin(column, player.color) > 3) {				// check for ascending diagonal win.
+		else if (isADiagonalWin(column, player.color)) {				// check for ascending diagonal win.
+			std::cout << "Ascending diagonal win for " << player.color << "\n";
 			return true;
 		}
-		else if (horizontalWin(column, player.color) > 3) {			// check for horizontal win
+		else if (isHorizontalWin(column, player.color)) {			// check for horizontal win
+			std::cout << "Horizontal win for " << player.color << "\n";
 			return true;
 		}
-		else if (heights[column] < 3) {					// check for a vertical win only when the height of the column allows it
-			if (verticalWin(column, player.color) > 3) {
+		else if (remainingRoom[column] < 3) {					// check for a vertical win only when the height of the column allows it
+			if (isVerticalWin(column, player.color)) {
+				std::cout << "Vertical win for " << player.color << "\n";
 				return true;
 			}
 		}
 		return false;
 	}
-
 	void print() {
 		std::cout << "\n  0  1  2  3  4  5  6 ";
 		for (int i = 0; i < 6; i++) {
@@ -115,23 +109,27 @@ public:
 		}
 		std::cout << "\n\n\n\n\n\n";
 	}
-	int verticalWin(int column, char playerColor) {
+	bool isVerticalWin(int column, char playerColor) {
 		int connected = 1;
-		int temp = heights[column] + 1;
+		int temp = remainingRoom[column] + 1;
 		while (temp < 6) {
 			if (board[temp][column] == playerColor) {
 				connected++;
+				if (connected == 4) {
+					return true;
+
+				}
 			}
 			else {
-				return connected;															//** is this how break works?
+				return false;
 			}
 			temp++;
 		}
-		return connected;
+		return false;
 	}
-	int horizontalWin(int column, char playerColor) {
+	bool isHorizontalWin(int column, char playerColor) {
 		int connected = 1;
-		int temp = heights[column];
+		int temp = remainingRoom[column];
 		column--;
 
 		while (column >= 0 && board[temp][column] == playerColor) {
@@ -146,11 +144,17 @@ public:
 			column++;
 		}
 		//		std::cout << "found " << connected << "connected";
-		return connected;
+		if (connected > 3) {
+			return true;
+
+		}
+		else {
+			return false;
+		}
 	}
-	int dDiagonalWin(int column, char playerColor) {
+	bool isDDiagonalWin(int column, char playerColor) {
 		int connected = 1;								// the first item will always be "connected" so just skip searching it
-		int tempRow = heights[column] - 1;
+		int tempRow = remainingRoom[column] - 1;
 		int tempCol = column - 1;
 
 		while (tempCol >= 0 && tempRow >= 0 && board[tempRow][tempCol] == playerColor) {
@@ -161,7 +165,7 @@ public:
 
 		}
 		tempCol = column + 1;
-		tempRow = heights[column] + 1;
+		tempRow = remainingRoom[column] + 1;
 		while (tempCol <= 6 && tempRow <= 5 && board[tempRow][tempCol] == playerColor) {
 			connected++;
 			//			std::cout << "looking down/right at postion " << tempRow << " " << tempCol << "   " << board[tempRow][tempCol] << " matches " << player.color << "\n";
@@ -169,11 +173,17 @@ public:
 			tempRow++;
 
 		}
-		return connected;
+		if (connected > 3) {
+			return true;
+
+		}
+		else {
+			return false;
+		}
 	}
-	int aDiagonalWin(int column, char playerColor) {
+	bool isADiagonalWin(int column, char playerColor) {
 		int connected = 1;								// the first item will always be "connected" so just skip searching it
-		int tempRow = heights[column] - 1;
+		int tempRow = remainingRoom[column] - 1;
 		int tempCol = column + 1;
 
 		while (tempCol <= 6 && tempRow >= 0 && board[tempRow][tempCol] == playerColor) {
@@ -184,7 +194,7 @@ public:
 
 		}
 		tempCol = column - 1;
-		tempRow = heights[column] + 1;
+		tempRow = remainingRoom[column] + 1;
 		while (tempCol >= 0 && tempRow <= 5 && board[tempRow][tempCol] == playerColor) {
 			connected++;
 			//			std::cout << "looking down/left at postion " << tempRow << " " << tempCol << "   " << board[tempRow][tempCol] << " matches " << player.color << "\n";
@@ -192,86 +202,41 @@ public:
 			tempRow++;
 
 		}
-		return connected;
+		if (connected > 3) {
+			return true;
+
+		}
+		else {
+			return false;
+		}
 	}
+
 };
 
 class Computer : public Player {
 private:
 	//AI values:
-	int centerValue = 3;
+	int centerValue = 6;
+	int middleValue = 3;
 	int edgePenalty = -1;
 	int connect1Value = 0;
 	int connect2Value = 2;
-	int connect3Value = 4;
-	int connect4value = 100;
+	int connect3Value = 8;
+	int connect4value = 1000;
 
 public:
-	Computer(char color, char number,bool other) {	// need to update the constructor if I use it more. 
+	Computer(char color, char number, bool other) {	// need to update the constructor if I use it more. 
 		this->color = color;
 		name[7] = number;
 		this->isAI = true;
-	}
-	int aDiagonalVal(int column, Board board) {						// ascending diagonal value for connections. (All ___Val are clones of each other)
-		if (board.aDiagonalWin(column, this->color) == 2) {
-			return connect2Value;
-		}
-		else if (board.aDiagonalWin(column, this->color) == 3) {
-			return connect3Value;
-		}
-		else if (board.aDiagonalWin(column, this->color) >= 4) {
-			return connect4value;
-		}
-		else {
-			return connect1Value;
-		}
-	}
-	int dDiagonalVal(int column, Board board) {						// Descending diagonal value for connections. (All ___Val are clones of each other)
-		if (board.dDiagonalWin(column, this->color) == 2) {
-			return connect2Value;
-		}
-		else if (board.dDiagonalWin(column, this->color) == 3) {
-			return connect3Value;
-		}
-		else if (board.dDiagonalWin(column, this->color) >= 4) {
-			return connect4value;
-		}
-		else {
-			return connect1Value;
-		}
-	}
-	int horizontalVal(int column, Board board) {						//  Horizontal value for connections. (All ___Val are clones of each other)
-		if (board.horizontalWin(column, this->color) == 2) {
-			return connect2Value;
-		}
-		else if (board.horizontalWin(column, this->color) == 3) {
-			return connect3Value;
-		}
-		else if (board.horizontalWin(column, this->color) >= 4) {
-			return connect4value;
-		}
-		else {
-			return connect1Value; 
-		}
-	}
-	int verticalVal(int column, Board board) {						//  Vertical value for connections. (All ___Val are clones of each other)
-		if (board.verticalWin(column, this->color) == 2) {
-			return connect2Value;
-		}
-		else if (board.verticalWin(column, this->color) == 3) {
-			return connect3Value;
-		}
-		else if (board.verticalWin(column, this->color) >= 4) {
-			return connect4value;
-		}
-		else {
-			return connect1Value;
-		}
 	}
 	int columnVal(int column) {			// for the raw column values, no connections included // should be private
 
 		if (column == 3) {
 			return centerValue;
+		}
+		else if (column == 2 || column == 4) {
+			return middleValue;
 		}
 		else if (column == 0 || column == 6) {
 			return edgePenalty;
@@ -280,6 +245,68 @@ public:
 			return connect1Value;
 		}
 	}
+
+	int verticalVal(int column, Board board) {						//  Vertical value for connections. (All ___Val are clones of each other)
+		if (board.isVerticalWin(column, this->color) == 2) {
+			return connect2Value;
+		}
+		else if (board.isVerticalWin(column, this->color) == 3) {
+			return connect3Value;
+		}
+		else if (board.isVerticalWin(column, this->color) >= 4) {
+			return connect4value;
+		}
+		else {
+			return connect1Value;
+		}
+	}
+
+
+	int aDiagonalVal(int column, Board board) {						// ascending diagonal value for connections. (All ___Val are clones of each other)
+		if (board.isADiagonalWin(column, this->color) == 2) {
+			return connect2Value;
+		}
+		else if (board.isADiagonalWin(column, this->color) == 3) {
+			return connect3Value;
+		}
+		else if (board.isADiagonalWin(column, this->color) >= 4) {
+			return connect4value;
+		}
+		else {
+			return connect1Value;
+		}
+	}
+	int dDiagonalVal(int column, Board board) {						// Descending diagonal value for connections. (All ___Val are clones of each other)
+		if (board.isDDiagonalWin(column, this->color) == 2) {
+			return connect2Value;
+		}
+		else if (board.isDDiagonalWin(column, this->color) == 3) {
+			return connect3Value;
+		}
+		else if (board.isDDiagonalWin(column, this->color) >= 4) {
+			return connect4value;
+		}
+		else {
+			return connect1Value;
+		}
+	}
+	int horizontalVal(int column, Board board) {						//  Horizontal value for connections. (All ___Val are clones of each other)
+		if (board.isHorizontalWin(column, this->color) == 2) {
+			return connect2Value;
+		}
+		else if (board.isHorizontalWin(column, this->color) == 3) {
+			return connect3Value;
+		}
+		else if (board.isHorizontalWin(column, this->color) >= 4) {
+			return connect4value;
+		}
+		else {
+			return connect1Value;
+		}
+	}
+
+
+
 	int evaluateColumn(int column, Board board) {		// only pass on valid columns 
 
 		int value = 0;
@@ -309,7 +336,7 @@ public:
 			std::cout << "\n\n Evaluating column " << i << "\n";
 			if (board.isValid(i)) {
 				Board board2;
-				board2.setHeights(board.heights);
+				board2.setHeights(board.remainingRoom);
 				board2.setBoard(board.board);
 				board2.play(i, player);
 				board2.print();
@@ -333,7 +360,8 @@ int main() {
 	int input;
 	int counter = 0;
 	Player player1 = Player('R', '1', false);
-	Computer player2 = Computer('B', '2', true);
+	Player player2 = Player('B', '2', false);
+	//	Computer player2 = Computer('B', '2', true);
 	board.print();
 
 
@@ -345,7 +373,7 @@ int main() {
 		}
 
 		if (currentPlayer.isAI) {
-			input = player2.getBestTurn(board, player2,player1);
+			//			input = player2.getBestTurn(board, player2,player1);
 		}
 		else {
 			std::cout << "Enter your next move ";
@@ -360,7 +388,7 @@ int main() {
 
 		board.play(input, currentPlayer);
 
-		
+
 		counter++;
 		turn++;
 		turn = turn % 2;
