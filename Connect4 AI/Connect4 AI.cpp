@@ -245,7 +245,6 @@ public:
 			return connect1Value;
 		}
 	}
-
 	int verticalVal(int column, Board board) {						//  Vertical value for connections. (All ___Val are clones of each other)
 		if (board.isVerticalWin(column, this->color) == 2) {
 			return connect2Value;
@@ -260,8 +259,6 @@ public:
 			return connect1Value;
 		}
 	}
-
-
 	int aDiagonalVal(int column, Board board) {						// ascending diagonal value for connections. (All ___Val are clones of each other)
 		if (board.isADiagonalWin(column, this->color) == 2) {
 			return connect2Value;
@@ -304,9 +301,6 @@ public:
 			return connect1Value;
 		}
 	}
-
-
-
 	int evaluateColumn(int column, Board board) {		// only pass on valid columns 
 
 		int value = 0;
@@ -328,7 +322,6 @@ public:
 		std::cout << "total value of column " << column << " is " << value << "\n";
 		return value;
 	}
-
 	int getBestTurn(Board board, Player player, Player enemyPlayer) { // returns the column with the best score (eventually)
 		int maxTurnVal = -999;
 		int bestColumn;
@@ -349,6 +342,10 @@ public:
 		}
 		std::cout << "\n\n BEST COLUMN FOUND IS  " << bestColumn << " WITH VALUE " << maxTurnVal << "\n";
 		return bestColumn;
+	}
+
+	int evaluateBoard(Board board, Player player) {
+
 	}
 };
 
