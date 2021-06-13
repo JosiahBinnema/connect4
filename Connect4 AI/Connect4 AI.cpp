@@ -332,8 +332,8 @@ int main() {
 	Board board;
 	int input;
 	int counter = 0;
-	Player player1 = Player('R', '1', false);
-	Computer player2 = Computer('B', '2', true);
+	Player player1 = Player('O', '1', false);
+	Computer player2 = Computer('X', '2', true);
 	board.print();
 
 
