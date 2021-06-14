@@ -49,16 +49,14 @@ public:
 			}
 		}
 	}
-	void setHeights(int newHeights[7]) {
-		for (int k = 0; k < 7; k++) {
-			remainingRoom[k] = newHeights[k];
-		}
-	}
-	void setBoard(char newBoard[6][7]) {
+	void buildBoard(int newHeights[7], char newBoard[6][7]) {
 		for (int i = 0; i < 6; i++) {
 			for (int j = 0; j < 7; j++) {
 				board[i][j] = newBoard[i][j];
 			}
+		}
+		for (int k = 0; k < 7; k++) {
+			heights[k] = newHeights[k];
 		}
 	}
 	bool isValid(int column) {
@@ -329,8 +327,7 @@ public:
 			std::cout << "\n\n Evaluating column " << i << "\n";
 			if (board.isValid(i)) {
 				Board board2;
-				board2.setHeights(board.remainingRoom);
-				board2.setBoard(board.board);
+				board2.buildBoard((board.remainingRoom, board.board);
 				board2.play(i, player);
 				board2.print();
 				int val = evaluateColumn(i, board2);
@@ -345,7 +342,7 @@ public:
 	}
 
 	int evaluate4(Board board, int row, Player player) {
-		int count = 0
+		int count = 0;
 		bool player1 = false;
 		bool player2 = false;
 
@@ -353,10 +350,10 @@ public:
 			if (board[row][i] != ' ') {
 				if (player.color == board[row][i]) {
 					count++;
-					player1 == true;
+					player1 = true;
 				}
 				else {
-					player2 == true;
+					player2 = true;
 					count--;
 				}
 				if (player2 && player1) {
@@ -389,73 +386,71 @@ public:
 		int ptr2 = 0;
 		for (int i = 0; i < 7; i++) {
 			if (board[row][i] != ' ') {				// evaluate from ptr1 to ptr2+4 UNFINISHED
-				for (j = 0; j < ptr2+4 && j < 7 ; j++) {
+				for (int j = 0; j < ptr2 + 4 && j < 7; j++) {
 
+				}
+				ptr2++;
 			}
-			ptr2++;
+
 		}
-
 	}
 
-	int evaluateBoard(char pieceArray[]) {
 
-	}
 };
 
 
-int main() {
-	srand(time(NULL));
-	int turn = (rand() % 2);
-	Board board;
-	int input;
-	int counter = 0;
-	Player player1 = Player('R', '1', false);
-	Player player2 = Player('B', '2', false);
-	//	Computer player2 = Computer('B', '2', true);
-	board.print();
-
-
-	while (true) {
-
-		Player currentPlayer = player2;
-		if (turn == 0) {
-			currentPlayer = player1;
-		}
-
-		if (currentPlayer.isAI) {
-			//			input = player2.getBestTurn(board, player2,player1);
-		}
-		else {
-			std::cout << "Enter your next move ";
-			currentPlayer.printName();
-			std::cout << "\n";
-			std::cin >> input;
-			while (!(board.isValid(input))) {										// ensure proper input from user
-				std::cout << "Please enter a valid input for your next move\n";
-				std::cin >> input;
-			}
-		}
-
-		board.play(input, currentPlayer);
-
-
-		counter++;
-		turn++;
-		turn = turn % 2;
-
-		if (board.isWin(input, currentPlayer)) {										// if the move wins, then print and clear board
-			board.print();
-			std::cout << "Congratuations ";
-			currentPlayer.printName();
-			std::cout << " You win! \n";
-			board.clear();
-			counter = 0;
-		}
-		board.print();
-	}
-
-
-
-	void runTestBoard(){
+	int main() {
+		srand(time(NULL));
+		int turn = (rand() % 2);
 		Board board;
-}
+		int input;
+		int counter = 0;
+		Player player1 = Player('R', '1', false);
+		Player player2 = Player('B', '2', false);
+		//	Computer player2 = Computer('B', '2', true);
+		board.print();
+
+
+		while (true) {
+
+			Player currentPlayer = player2;
+			if (turn == 0) {
+				currentPlayer = player1;
+			}
+
+			if (currentPlayer.isAI) {
+				//			input = player2.getBestTurn(board, player2,player1);
+			}
+			else {
+				std::cout << "Enter your next move ";
+				currentPlayer.printName();
+				std::cout << "\n";
+				std::cin >> input;
+				while (!(board.isValid(input))) {										// ensure proper input from user
+					std::cout << "Please enter a valid input for your next move\n";
+					std::cin >> input;
+				}
+			}
+
+			board.play(input, currentPlayer);
+
+
+			counter++;
+			turn++;
+			turn = turn % 2;
+
+			if (board.isWin(input, currentPlayer)) {										// if the move wins, then print and clear board
+				board.print();
+				std::cout << "Congratuations ";
+				currentPlayer.printName();
+				std::cout << " You win! \n";
+				board.clear();
+				counter = 0;
+			}
+			board.print();
+		}
+
+
+
+
+	};
