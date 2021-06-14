@@ -344,7 +344,60 @@ public:
 		return bestColumn;
 	}
 
-	int evaluateBoard(Board board, Player player) {
+	int evaluate4(Board board, int row, Player player) {
+		int count = 0
+		bool player1 = false;
+		bool player2 = false;
+
+		for (int i = 0; i < 4; i++) {
+			if (board[row][i] != ' ') {
+				if (player.color == board[row][i]) {
+					count++;
+					player1 == true;
+				}
+				else {
+					player2 == true;
+					count--;
+				}
+				if (player2 && player1) {
+					return 0;
+				}
+			}
+		}
+		if (count == 4) {
+			return connect4value;
+		}
+		else if (count == 3) {
+			return connect3Value;
+		}
+		else if (count == 2) {
+			return connect2Value;
+		}
+		else if (count == 1) {
+			return connect1Value;
+		}
+	}
+
+
+
+
+
+
+	int evaluaterow(Board board, int row, Player player) {
+		int value = 0;
+		int ptr1 = 0;
+		int ptr2 = 0;
+		for (int i = 0; i < 7; i++) {
+			if (board[row][i] != ' ') {				// evaluate from ptr1 to ptr2+4 UNFINISHED
+				for (j = 0; j < ptr2+4 && j < 7 ; j++) {
+
+			}
+			ptr2++;
+		}
+
+	}
+
+	int evaluateBoard(char pieceArray[]) {
 
 	}
 };
@@ -400,4 +453,9 @@ int main() {
 		}
 		board.print();
 	}
+
+
+
+	void runTestBoard(){
+		Board board;
 }
