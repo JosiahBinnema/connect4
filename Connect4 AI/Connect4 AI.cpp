@@ -56,7 +56,7 @@ public:
 			}
 		}
 		for (int k = 0; k < 7; k++) {
-			heights[k] = newHeights[k];
+			remainingRoom[k] = newHeights[k];
 		}
 	}
 	bool isValid(int column) {
