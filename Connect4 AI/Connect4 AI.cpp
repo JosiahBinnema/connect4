@@ -548,15 +548,14 @@ public:
 	}
 
 	int getBestMove(Board board, Player player, Player enemyPlayer) {
-		int maxTurnVal = -INFINITY;
-		int bestColumn;
+		int maxTurnVal = -999999;
+		int bestColumn = 3;
 		for (int i = 0; i < 7; i++) {
 			if (board.isValid(i)) {
-				std::cout << "searching column " << i << "\n";
 				board.play(i, player);
 				int tempVal = evaluatePosition(board, player);
-				std::cout << "value is " << tempVal << " versus " << maxTurnVal<< "\n";
-				if (tempVal > maxTurnVal) {
+
+				if (tempVal >= maxTurnVal) {
 					maxTurnVal = tempVal;
 					bestColumn = i;
 				}
