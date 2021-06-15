@@ -1,10 +1,6 @@
-// Connect4 AI.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
-
 
 class Player {			//should be private with get/set
 public:
@@ -32,27 +28,28 @@ public:
 
 class Board {
 public:
-	char board[6][7] = { { ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
+	char boardArray[6][7] = { { ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
 							{ ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
 							{ ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
 							{ ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
 							{ ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
 							{ ' ', ' ', ' ', ' ', ' ', ' ', ' ',} };
 	int remainingRoom[7] = { 6,6,6,6,6,6,6 };			//remaining room in each column
+	int leastRemaining = 6;
 	void clear() {
 		for (int k = 0; k < 7; k++) {
 			remainingRoom[k] = 6;
 		}
 		for (int i = 0; i < 6; i++) {
 			for (int j = 0; j < 7; j++) {
-				board[i][j] = ' ';
+				boardArray[i][j] = ' ';
 			}
 		}
 	}
 	void buildBoard(int newHeights[7], char newBoard[6][7]) {
 		for (int i = 0; i < 6; i++) {
 			for (int j = 0; j < 7; j++) {
-				board[i][j] = newBoard[i][j];
+				boardArray[i][j] = newBoard[i][j];
 			}
 		}
 		for (int k = 0; k < 7; k++) {
@@ -68,11 +65,12 @@ public:
 		}
 		return true;
 	}
-	// play a move ** should be checked by isValid first **
-	// 
 	void play(int column, Player player) {		// column starts at 0 
-		board[(remainingRoom[column] - 1)][column] = player.color;
+		boardArray[(remainingRoom[column] - 1)][column] = player.color;
 		remainingRoom[column]--;
+		if (remainingRoom[column] < leastRemaining) {
+			leastRemaining = remainingRoom[column];
+		}
 	}
 	bool isWin(int column, Player player) {			//should be called before the move has been made on the board.
 
@@ -101,7 +99,7 @@ public:
 		for (int i = 0; i < 6; i++) {
 			std::cout << "\n|";
 			for (int j = 0; j < 7; j++) {
-				std::cout << board[i][j] << " " << "|";
+				std::cout << boardArray[i][j] << " " << "|";
 			}
 
 		}
@@ -111,7 +109,7 @@ public:
 		int connected = 1;
 		int temp = remainingRoom[column] + 1;
 		while (temp < 6) {
-			if (board[temp][column] == playerColor) {
+			if (boardArray[temp][column] == playerColor) {
 				connected++;
 				if (connected == 4) {
 					return true;
@@ -130,13 +128,13 @@ public:
 		int temp = remainingRoom[column];
 		column--;
 
-		while (column >= 0 && board[temp][column] == playerColor) {
+		while (column >= 0 && boardArray[temp][column] == playerColor) {
 			//			std::cout << "looking left at position " << temp << " " << column << "    " << board[temp][column] << " matches " << player.color << "\n";
 			connected++;
 			column--;
 		}
 		column = column + connected + 1;
-		while (column <= 6 && board[temp][column] == playerColor) {
+		while (column <= 6 && boardArray[temp][column] == playerColor) {
 			//			std::cout << "looking right at position " << temp << " " << column << "   " << board[temp][column] << " matches " << player.color << "\n";
 			connected++;
 			column++;
@@ -155,7 +153,7 @@ public:
 		int tempRow = remainingRoom[column] - 1;
 		int tempCol = column - 1;
 
-		while (tempCol >= 0 && tempRow >= 0 && board[tempRow][tempCol] == playerColor) {
+		while (tempCol >= 0 && tempRow >= 0 && boardArray[tempRow][tempCol] == playerColor) {
 			connected++;
 			//			std::cout << "looking up/left at postion " << tempRow << " " << tempCol << "   " << board[tempRow][tempCol] << " matches " << player.color << "\n";
 			tempCol--;
@@ -164,7 +162,7 @@ public:
 		}
 		tempCol = column + 1;
 		tempRow = remainingRoom[column] + 1;
-		while (tempCol <= 6 && tempRow <= 5 && board[tempRow][tempCol] == playerColor) {
+		while (tempCol <= 6 && tempRow <= 5 && boardArray[tempRow][tempCol] == playerColor) {
 			connected++;
 			//			std::cout << "looking down/right at postion " << tempRow << " " << tempCol << "   " << board[tempRow][tempCol] << " matches " << player.color << "\n";
 			tempCol++;
@@ -184,7 +182,7 @@ public:
 		int tempRow = remainingRoom[column] - 1;
 		int tempCol = column + 1;
 
-		while (tempCol <= 6 && tempRow >= 0 && board[tempRow][tempCol] == playerColor) {
+		while (tempCol <= 6 && tempRow >= 0 && boardArray[tempRow][tempCol] == playerColor) {
 			connected++;
 			//			std::cout << "looking up/right at postion " << tempRow << " " << tempCol << "   " << board[tempRow][tempCol] << " matches " << player.color << "\n";
 			tempCol++;
@@ -193,7 +191,7 @@ public:
 		}
 		tempCol = column - 1;
 		tempRow = remainingRoom[column] + 1;
-		while (tempCol >= 0 && tempRow <= 5 && board[tempRow][tempCol] == playerColor) {
+		while (tempCol >= 0 && tempRow <= 5 && boardArray[tempRow][tempCol] == playerColor) {
 			connected++;
 			//			std::cout << "looking down/left at postion " << tempRow << " " << tempCol << "   " << board[tempRow][tempCol] << " matches " << player.color << "\n";
 			tempCol--;
@@ -208,7 +206,6 @@ public:
 			return false;
 		}
 	}
-
 };
 
 class Computer : public Player {
@@ -217,17 +214,11 @@ private:
 	int centerValue = 6;
 	int middleValue = 3;
 	int edgePenalty = -1;
-	int connect1Value = 0;
-	int connect2Value = 2;
-	int connect3Value = 8;
+	int connect1Value = 1;
+	int connect2Value = 3;
+	int connect3Value = 15;
 	int connect4value = 1000;
 
-public:
-	Computer(char color, char number, bool other) {	// need to update the constructor if I use it more. 
-		this->color = color;
-		name[7] = number;
-		this->isAI = true;
-	}
 	int columnVal(int column) {			// for the raw column values, no connections included // should be private
 
 		if (column == 3) {
@@ -299,6 +290,124 @@ public:
 			return connect1Value;
 		}
 	}
+
+	int returnValue(int count) {
+		if (count == 4) {
+			return connect4value;
+		}
+		else if (count == 3) {
+			return connect3Value;
+		}
+		else if (count == 2) {
+			return connect2Value;
+		}
+		else if (count == 1) {
+			return connect1Value;
+		}
+		else if (count == 0) {
+			return 0;
+		}
+		else if (count == -4) {
+			return -connect4value;
+		}
+		else if (count == -3) {
+			return -connect3Value;
+		}
+		else if (count == -2) {
+			return -connect2Value;
+		}
+		else if (count == -1) {
+			return -connect1Value;
+		}
+	}
+	int evaluate4Horizontal(Board board, int row, int column, Player player) {		// only pass with column < 4
+//		std::cout << "the character at examined is |";
+		int count = 0;
+		bool player1 = false;
+		bool player2 = false;
+		for (int i = column; i < (column + 4); i++) {
+//			std::cout << board.boardArray[row][i] << " |";
+			if (board.boardArray[row][i] != ' ') {
+
+				if (player.color == board.boardArray[row][i]) {
+					count++;
+					player1 = true;
+				}
+				else {
+					player2 = true;
+					count--;
+				}
+				if (player2 && player1) {
+					//					std::cout <<"Both players are in this";
+					return 0;
+				}
+			}
+		}
+		//		std::cout << " \n value is " << returnValue(count) << "\n";
+		return returnValue(count);
+	}
+	int evaluateRow(Board board, int row, Player player) {
+		int value = 0;
+		for (int i = 0; i < 4; i++) {
+			value += evaluate4Horizontal(board, row, i, player);
+		}
+		//		std::cout << "Total value of row " << row << " is " << value;
+		return value;
+	}
+	int evaluateColumn(Board board, int column, Player player) {				// only pass with row < 3
+		int count = 0;
+		bool player1 = false;
+		bool player2 = false;
+
+		for (int i = 5; i >= 0; i--) {
+			if (count + i >= 3) {
+//				std::cout << board.boardArray[i][column] << " |";
+				if (board.boardArray[i][column] == ' ') {
+					break;
+				}
+				if (player.color == board.boardArray[i][column]) {
+					if (player1) {
+						count++;
+					}
+					else {
+						player1 = true;
+						player2 = false;
+						count = 1;
+					}
+				}
+				else {
+					if (player2) {
+						count++;
+					}
+					else {
+						player1 = false;
+						player2 = true;
+						count = 1;
+					}
+				}
+			}
+			else {
+//				std::cout << "row " << i << " with " << count << " Means no more room in this column \n";
+				return 0;
+			}
+		}
+//		std::cout << " \n value is " << returnValue(count) << "\n";
+		if (player2) {
+			return returnValue(-count);
+		}
+		else {
+			return returnValue(count);
+		}
+
+	}
+
+
+public:
+	Computer(char color, char number, bool other) {	// need to update the constructor if I use it more. 
+		this->color = color;
+		name[7] = number;
+		this->isAI = true;
+	}
 	int evaluateColumn(int column, Board board) {		// only pass on valid columns 
 
 		int value = 0;
@@ -327,7 +436,7 @@ public:
 			std::cout << "\n\n Evaluating column " << i << "\n";
 			if (board.isValid(i)) {
 				Board board2;
-				board2.buildBoard((board.remainingRoom, board.board);
+				board2.buildBoard(board.remainingRoom, board.boardArray);
 				board2.play(i, player);
 				board2.print();
 				int val = evaluateColumn(i, board2);
@@ -341,60 +450,25 @@ public:
 		return bestColumn;
 	}
 
-	int evaluate4(Board board, int row, Player player) {
-		int count = 0;
-		bool player1 = false;
-		bool player2 = false;
 
-		for (int i = 0; i < 4; i++) {
-			if (board[row][i] != ' ') {
-				if (player.color == board[row][i]) {
-					count++;
-					player1 = true;
-				}
-				else {
-					player2 = true;
-					count--;
-				}
-				if (player2 && player1) {
-					return 0;
-				}
-			}
-		}
-		if (count == 4) {
-			return connect4value;
-		}
-		else if (count == 3) {
-			return connect3Value;
-		}
-		else if (count == 2) {
-			return connect2Value;
-		}
-		else if (count == 1) {
-			return connect1Value;
-		}
-	}
-
-
-
-
-
-
-	int evaluaterow(Board board, int row, Player player) {
+	int evaluateHorizontals(Board board, Player player) {
 		int value = 0;
-		int ptr1 = 0;
-		int ptr2 = 0;
-		for (int i = 0; i < 7; i++) {
-			if (board[row][i] != ' ') {				// evaluate from ptr1 to ptr2+4 UNFINISHED
-				for (int j = 0; j < ptr2 + 4 && j < 7; j++) {
-
-				}
-				ptr2++;
-			}
-
+		for (int i = 5; i >= (board.leastRemaining - 1); i--) {
+			value += evaluateRow(board, i, player);
 		}
+		return value;
 	}
 
+
+
+
+	int evaluateColumns(Board board, Player player) {
+		int value = 0;
+		for (int i = 0; i < 7; i++) {
+			value += evaluateColumn(board, i, player);
+		}
+		return value;
+	}
 
 };
 
@@ -405,11 +479,10 @@ public:
 		Board board;
 		int input;
 		int counter = 0;
-		Player player1 = Player('R', '1', false);
-		Player player2 = Player('B', '2', false);
-		//	Computer player2 = Computer('B', '2', true);
+		Player player1 = Player('O', '1', false);
+		Player player2 = Player('X', '2', true);
+		Computer computer = Computer('H', 'C', true);
 		board.print();
-
 
 		while (true) {
 
@@ -418,10 +491,9 @@ public:
 				currentPlayer = player1;
 			}
 
-			if (currentPlayer.isAI) {
-				//			input = player2.getBestTurn(board, player2,player1);
-			}
-			else {
+
+			//else {
+
 				std::cout << "Enter your next move ";
 				currentPlayer.printName();
 				std::cout << "\n";
@@ -430,10 +502,15 @@ public:
 					std::cout << "Please enter a valid input for your next move\n";
 					std::cin >> input;
 				}
-			}
+//			}
 
 			board.play(input, currentPlayer);
 
+			if (currentPlayer.isAI) {
+				int x = computer.evaluateHorizontals(board, currentPlayer);
+				int y = computer.evaluateColumns(board, currentPlayer);
+				std::cout << "all horizontal values total " << x << " all vertical values total " << y << "\n";
+			}
 
 			counter++;
 			turn++;
@@ -449,8 +526,6 @@ public:
 			}
 			board.print();
 		}
-
-
 
 
 	};
