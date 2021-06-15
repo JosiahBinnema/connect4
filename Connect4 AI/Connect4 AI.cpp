@@ -548,14 +548,16 @@ public:
 
 
 	int main() {
+
+
+
 		srand(time(NULL));
 		int turn = (rand() % 2);
 		Board board;
 		int input;
 		int counter = 0;
 		Player player1 = Player('O', '1', false);
-		Player player2 = Player('X', '2', true);
-		Computer computer = Computer('H', 'C', true);
+		Computer player2 = Computer('X', '2', true);
 		board.print();
 
 		while (true) {
@@ -566,7 +568,7 @@ public:
 			}
 
 
-			//else {
+			else {
 
 				std::cout << "Enter your next move ";
 				currentPlayer.printName();
@@ -576,16 +578,12 @@ public:
 					std::cout << "Please enter a valid input for your next move\n";
 					std::cin >> input;
 				}
-//			}
+			}
 
 			board.play(input, currentPlayer);
 
 			if (currentPlayer.isAI) {
-//				int x = computer.evaluateHorizontals(board, currentPlayer);
-//				int y = computer.evaluateColumns(board, currentPlayer);
-				int z = computer.evaluatePosition(board, currentPlayer);
-//				std::cout << "all horizontal values total " << x << " all vertical values total " << y << "\n";
-				std::cout << " position value is  " << z << "\n";
+				input = player2.getBestTurnOUTDATED(board, player2, player1);
 			}
 
 			counter++;
