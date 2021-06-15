@@ -351,7 +351,7 @@ private:
 		for (int i = 0; i < 4; i++) {
 			value += evaluate4Horizontal(board, row, i, player);
 		}
-		//		std::cout << "Total value of row " << row << " is " << value;
+			std::cout << "Total value of row " << row << " is " << value << "\n";
 		return value;
 	}
 	int evaluateColumn(Board board, int column, Player player) {				// only pass with row < 3
@@ -453,15 +453,11 @@ public:
 
 	int evaluateHorizontals(Board board, Player player) {
 		int value = 0;
-		for (int i = 5; i >= (board.leastRemaining - 1); i--) {
+		for (int i = 5; i >= (board.leastRemaining); i--) {
 			value += evaluateRow(board, i, player);
 		}
 		return value;
 	}
-
-
-
-
 	int evaluateColumns(Board board, Player player) {
 		int value = 0;
 		for (int i = 0; i < 7; i++) {
