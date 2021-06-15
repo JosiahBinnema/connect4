@@ -351,7 +351,7 @@ private:
 		for (int i = 0; i < 4; i++) {
 			value += evaluate4Horizontal(board, row, i, player);
 		}
-			std::cout << "Total value of row " << row << " is " << value << "\n";
+//			std::cout << "Total value of row " << row << " is " << value << "\n";
 		return value;
 	}
 	int evaluateColumn(Board board, int column, Player player) {				// only pass with row < 3
@@ -400,13 +400,92 @@ private:
 		}
 
 	}
+	int evaluateADiagonal4(Board board, int row, int column, Player player) {
+		int count = 0;
+		int i = row;
+		int j = column;
+		bool player1 = false;
+		bool player2 = false;
+		for (int k = 0; k < 4; k++) {
+//			std::cout << board.boardArray[i][j] << " |";
+			if (board.boardArray[i][j] != ' ') {
+				if (player.color == board.boardArray[i][j]) {
+					count++;
+					player1 = true;
+				}
+				else {
+					player2 = true;
+					count--;
+				}
+				if (player2 && player1) {
+					return 0;
+				}
+			}
+			i--;
+			j++;
+		}
+//		std::cout << "\n";
+		return returnValue(count);
+	}
+	int evaluateDDiagonal4(Board board, int row, int column, Player player) {
+		int count = 0;
+		int i = row;
+		int j = column;
+		bool player1 = false;
+		bool player2 = false;
+		for (int k = 0; k < 4; k++) {
+//			std::cout << board.boardArray[i][j] << " |";
+			if (board.boardArray[i][j] != ' ') {
+				if (player.color == board.boardArray[i][j]) {
+					count++;
+					player1 = true;
+				}
+				else {
+					player2 = true;
+					count--;
+				}
+				if (player2 && player1) {
+					return 0;
+				}
+			}
+			i--;
+			j--;
+		}
+//		std::cout << "\n";
+		return returnValue(count);
+	}
 
-
-public:
-	Computer(char color, char number, bool other) {	// need to update the constructor if I use it more. 
-		this->color = color;
-		name[7] = number;
-		this->isAI = true;
+	int evaluateHorizontals(Board board, Player player) {
+		int value = 0;
+		for (int i = 5; i >= (board.leastRemaining); i--) {
+			value += evaluateRow(board, i, player);
+		}
+		return value;
+	}
+	int evaluateColumns(Board board, Player player) {
+		int value = 0;
+		for (int i = 0; i < 7; i++) {
+			value += evaluateColumn(board, i, player);
+		}
+		return value;
+	}
+	int evaluateADiagonals(Board board, Player player) {
+		int value = 0;
+		for (int i = 5; i > 3; i--) {
+			for (int j = 3; j >= 0; j--) {
+				value += evaluateADiagonal4(board, i, j, player);
+			}
+			return value;
+		}
+	}
+	int evaluateDDiagonals(Board board, Player player) {
+		int value = 0;
+		for (int i = 5; i > 3; i--) {
+			for (int j = 3; j < 7; j++) {
+				value += evaluateDDiagonal4(board, i, j, player);
+			}
+			return value;
+		}
 	}
 	int evaluateColumn(int column, Board board) {		// only pass on valid columns 
 
@@ -429,7 +508,17 @@ public:
 		std::cout << "total value of column " << column << " is " << value << "\n";
 		return value;
 	}
-	int getBestTurn(Board board, Player player, Player enemyPlayer) { // returns the column with the best score (eventually)
+
+
+
+public:
+	Computer(char color, char number, bool other) {	// need to update the constructor if I use it more. 
+		this->color = color;
+		name[7] = number;
+		this->isAI = true;
+	}
+
+	int getBestTurnOUTDATED(Board board, Player player, Player enemyPlayer) { // returns the column with the best score (eventually)
 		int maxTurnVal = -999;
 		int bestColumn;
 		for (int i = 0; i < 7; i++) {
@@ -449,22 +538,11 @@ public:
 		std::cout << "\n\n BEST COLUMN FOUND IS  " << bestColumn << " WITH VALUE " << maxTurnVal << "\n";
 		return bestColumn;
 	}
-
-
-	int evaluateHorizontals(Board board, Player player) {
-		int value = 0;
-		for (int i = 5; i >= (board.leastRemaining); i--) {
-			value += evaluateRow(board, i, player);
-		}
-		return value;
+	
+	int evaluatePosition(Board board, Player player) {
+		 return (evaluateDDiagonals(board, player) + evaluateADiagonals(board, player) + evaluateColumns(board, player) + evaluateHorizontals(board, player));
 	}
-	int evaluateColumns(Board board, Player player) {
-		int value = 0;
-		for (int i = 0; i < 7; i++) {
-			value += evaluateColumn(board, i, player);
-		}
-		return value;
-	}
+
 
 };
 
@@ -503,9 +581,11 @@ public:
 			board.play(input, currentPlayer);
 
 			if (currentPlayer.isAI) {
-				int x = computer.evaluateHorizontals(board, currentPlayer);
-				int y = computer.evaluateColumns(board, currentPlayer);
-				std::cout << "all horizontal values total " << x << " all vertical values total " << y << "\n";
+//				int x = computer.evaluateHorizontals(board, currentPlayer);
+//				int y = computer.evaluateColumns(board, currentPlayer);
+				int z = computer.evaluatePosition(board, currentPlayer);
+//				std::cout << "all horizontal values total " << x << " all vertical values total " << y << "\n";
+				std::cout << " position value is  " << z << "\n";
 			}
 
 			counter++;
