@@ -577,16 +577,18 @@ int level2Move(Board board, Computer player2, Player player1) {
 	return player2.getBestMove(board, player2, player1);
 }
 
-	int main() {
+int main() {
+	srand(time(NULL));
+	int turn = (rand() % 2);
+	Board board;
+	int input;
+	int counter = 0;
+	Player player1 = Player('O', '1', false);
+	Computer player2 = Computer('X', '2', true);
+	board.print();
 
-		srand(time(NULL));
-		int turn = (rand() % 2);
-		Board board;
-		int input;
-		int counter = 0;
-		Player player1 = Player('O', '1', false);
-		Computer player2 = Computer('X', '2', true);
-		board.print();
+
+
 
 
 		while (true) {
