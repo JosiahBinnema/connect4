@@ -579,8 +579,6 @@ int level2Move(Board board, Computer player2, Player player1) {
 
 	int main() {
 
-
-
 		srand(time(NULL));
 		int turn = (rand() % 2);
 		Board board;
@@ -592,7 +590,6 @@ int level2Move(Board board, Computer player2, Player player1) {
 
 
 		while (true) {
-
 			Player currentPlayer = player2;
 			if (turn == 0) {
 				currentPlayer = player1;
