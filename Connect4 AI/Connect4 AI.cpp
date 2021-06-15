@@ -72,6 +72,11 @@ public:
 			leastRemaining = remainingRoom[column];
 		}
 	}
+
+	void unPlay(int column) {
+		boardArray[remainingRoom[column]][column] = ' ';
+	}
+
 	bool isWin(int column, Player player) {			//should be called before the move has been made on the board.
 
 		if (isDDiagonalWin(column, player.color)) {				// check for descending diagonal win.
@@ -449,9 +454,9 @@ private:
 				}
 			}
 			i--;
-			j--;
+j--;
 		}
-//		std::cout << "\n";
+		//		std::cout << "\n";
 		return returnValue(count);
 	}
 
@@ -518,7 +523,7 @@ public:
 		this->isAI = true;
 	}
 
-	int getBestTurnOUTDATED(Board board, Player player, Player enemyPlayer) { // returns the column with the best score (eventually)
+	int getBestTurnOUTDATED(Board board, Player player) { // ignores enemy player and plays "best move"
 		int maxTurnVal = -999;
 		int bestColumn;
 		for (int i = 0; i < 7; i++) {
@@ -527,7 +532,6 @@ public:
 				Board board2;
 				board2.buildBoard(board.remainingRoom, board.boardArray);
 				board2.play(i, player);
-				board2.print();
 				int val = evaluateColumn(i, board2);
 				if (val > maxTurnVal) {
 					maxTurnVal = val;
@@ -538,14 +542,41 @@ public:
 		std::cout << "\n\n BEST COLUMN FOUND IS  " << bestColumn << " WITH VALUE " << maxTurnVal << "\n";
 		return bestColumn;
 	}
-	
+
 	int evaluatePosition(Board board, Player player) {
-		 return (evaluateDDiagonals(board, player) + evaluateADiagonals(board, player) + evaluateColumns(board, player) + evaluateHorizontals(board, player));
+		return (evaluateDDiagonals(board, player) + evaluateADiagonals(board, player) + evaluateColumns(board, player) + evaluateHorizontals(board, player));
+	}
+
+	int getBestMove(Board board, Player player, Player enemyPlayer) {
+		int maxTurnVal = -INFINITY;
+		int bestColumn;
+		for (int i = 0; i < 7; i++) {
+			if (board.isValid(i)) {
+				std::cout << "searching column " << i << "\n";
+				board.play(i, player);
+				int tempVal = evaluatePosition(board, player);
+				std::cout << "value is " << tempVal << " versus " << maxTurnVal<< "\n";
+				if (tempVal > maxTurnVal) {
+					maxTurnVal = tempVal;
+					bestColumn = i;
+				}
+				board.unPlay(i);
+			}
+		}
+		std::cout << "\n\n BEST COLUMN FOUND IS  " << bestColumn << " WITH VALUE " << maxTurnVal << "\n";
+		return bestColumn;
 	}
 
 
 };
 
+
+int level1Move(Board board, Computer player2) {
+	return player2.getBestTurnOUTDATED(board, player2);
+}
+int level2Move(Board board, Computer player2, Player player1) {
+	return player2.getBestMove(board, player2, player1);
+}
 
 	int main() {
 
@@ -560,6 +591,7 @@ public:
 		Computer player2 = Computer('X', '2', true);
 		board.print();
 
+
 		while (true) {
 
 			Player currentPlayer = player2;
@@ -567,9 +599,10 @@ public:
 				currentPlayer = player1;
 			}
 
-
+			if (currentPlayer.isAI) {
+				input = level2Move(board, player2, player1);
+			}
 			else {
-
 				std::cout << "Enter your next move ";
 				currentPlayer.printName();
 				std::cout << "\n";
@@ -582,9 +615,6 @@ public:
 
 			board.play(input, currentPlayer);
 
-			if (currentPlayer.isAI) {
-				input = player2.getBestTurnOUTDATED(board, player2, player1);
-			}
 
 			counter++;
 			turn++;
@@ -600,6 +630,4 @@ public:
 			}
 			board.print();
 		}
-
-
 	};
