@@ -316,7 +316,7 @@ private:
 			return -connect4value;
 		}
 		else if (count == -3) {
-			return -(connect3Value + (connect3Value/2));
+			return -(connect3Value + 30);
 		}
 		else if (count == -2) {
 			return -connect2Value;
