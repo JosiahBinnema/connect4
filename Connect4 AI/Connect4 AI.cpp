@@ -209,6 +209,7 @@ public:
 			return false;
 		}
 	}
+
 };
 
 class Computer : public Player {
