@@ -72,11 +72,9 @@ public:
 			leastRemaining = remainingRoom[column];
 		}
 	}
-
 	void unPlay(int column) {
 		boardArray[remainingRoom[column]][column] = ' ';
 	}
-
 	bool isWin(int column, Player player) {			//should be called before the move has been made on the board.
 
 		if (isDDiagonalWin(column, player.color)) {				// check for descending diagonal win.
@@ -223,7 +221,6 @@ private:
 	int connect2Value = 3;
 	int connect3Value = 15;
 	int connect4value = 1000;
-
 	int columnVal(int column) {			// for the raw column values, no connections included // should be private
 
 		if (column == 3) {
@@ -295,7 +292,6 @@ private:
 			return connect1Value;
 		}
 	}
-
 	int returnValue(int count) {
 		if (count == 4) {
 			return connect4value;
@@ -316,7 +312,7 @@ private:
 			return -connect4value;
 		}
 		else if (count == -3) {
-			return -(connect3Value + (connect3Value/2));
+			return -(connect3Value + 30);
 		}
 		else if (count == -2) {
 			return -connect2Value;
@@ -459,7 +455,6 @@ j--;
 		//		std::cout << "\n";
 		return returnValue(count);
 	}
-
 	int evaluateHorizontals(Board board, Player player) {
 		int value = 0;
 		for (int i = 5; i >= (board.leastRemaining); i--) {
@@ -513,16 +508,12 @@ j--;
 		std::cout << "total value of column " << column << " is " << value << "\n";
 		return value;
 	}
-
-
-
 public:
 	Computer(char color, char number, bool other) {	// need to update the constructor if I use it more. 
 		this->color = color;
 		name[7] = number;
 		this->isAI = true;
 	}
-
 	int getBestTurnOUTDATED(Board board, Player player) { // ignores enemy player and plays "best move"
 		int maxTurnVal = -999;
 		int bestColumn;
@@ -542,11 +533,9 @@ public:
 		std::cout << "\n\n BEST COLUMN FOUND IS  " << bestColumn << " WITH VALUE " << maxTurnVal << "\n";
 		return bestColumn;
 	}
-
 	int evaluatePosition(Board board, Player player) {
 		return (evaluateDDiagonals(board, player) + evaluateADiagonals(board, player) + evaluateColumns(board, player) + evaluateHorizontals(board, player));
 	}
-
 	int getBestMove(Board board, Player player, Player enemyPlayer) {
 		int maxTurnVal = -999999;
 		int bestColumn = 3;
@@ -555,7 +544,7 @@ public:
 				board.play(i, player);
 				int tempVal = evaluatePosition(board, player);
 
-				if (tempVal >= maxTurnVal) {
+				if (tempVal > maxTurnVal) {
 					maxTurnVal = tempVal;
 					bestColumn = i;
 				}
@@ -565,8 +554,6 @@ public:
 		std::cout << "\n\n BEST COLUMN FOUND IS  " << bestColumn << " WITH VALUE " << maxTurnVal << "\n";
 		return bestColumn;
 	}
-
-
 };
 
 
@@ -577,44 +564,55 @@ int level1Move(Board board, Computer player2) {
 int level2Move(Board board, Computer player2, Player player1) {
 	return player2.getBestMove(board, player2, player1);
 }
+int getPlayerInput(Board board, Player player) {
+	int input;
+	std::cout << "Enter your next move ";
+	player.printName();
+	std::cout << "\n";
+	std::cin >> input;
+	while (!(board.isValid(input))) {										// ensure proper input from user
+		std::cout << "Please enter a valid input for your next move\n";
+		std::cin >> input;
+	}
+	return input;
+}
+int getAIInput(Board board, Computer computer, Player player, int level) {
+	int input;
+	if (level == 2) {
+		input = level2Move(board, computer, player);
+	}
+	else if (level == 1) {
+		input = level1Move(board, computer);
+	}
+	return input;
+}
+
 
 int main() {
 	srand(time(NULL));
 	int turn = (rand() % 2);
 	Board board;
 	int input;
+	int computerLevel = 2;
 	int counter = 0;
 	Player player1 = Player('O', '1', false);
 	Computer player2 = Computer('X', '2', true);
 	board.print();
-
-
-
-
 
 		while (true) {
 			Player currentPlayer = player2;
 			if (turn == 0) {
 				currentPlayer = player1;
 			}
-
 			if (currentPlayer.isAI) {
-				input = level2Move(board, player2, player1);
+				input = getAIInput(board, player2, player1, computerLevel);
 			}
 			else {
-				std::cout << "Enter your next move ";
-				currentPlayer.printName();
-				std::cout << "\n";
-				std::cin >> input;
-				while (!(board.isValid(input))) {										// ensure proper input from user
-					std::cout << "Please enter a valid input for your next move\n";
-					std::cin >> input;
-				}
+				input = getPlayerInput(board, currentPlayer);
 			}
 
+
 			board.play(input, currentPlayer);
-
-
 			counter++;
 			turn++;
 			turn = turn % 2;
