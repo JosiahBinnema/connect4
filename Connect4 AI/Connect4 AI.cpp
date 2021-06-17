@@ -78,20 +78,20 @@ public:
 	}
 	bool isWin(int column, Player player) {			//should be called before the move has been made on the board.
 
-		if (isDDiagonalWin(column, player.color)) {				// check for descending diagonal win.
+		if (isDDiagonalWin(column, player.color) > 3) {				// check for descending diagonal win.
 			std::cout << "Descending diagonal win for " << player.color << "\n";
 			return true;
 		}
-		else if (isADiagonalWin(column, player.color)) {				// check for ascending diagonal win.
+		else if (isADiagonalWin(column, player.color) > 3) {				// check for ascending diagonal win.
 			std::cout << "Ascending diagonal win for " << player.color << "\n";
 			return true;
 		}
-		else if (isHorizontalWin(column, player.color)) {			// check for horizontal win
+		else if (isHorizontalWin(column, player.color) > 3) {			// check for horizontal win
 			std::cout << "Horizontal win for " << player.color << "\n";
 			return true;
 		}
 		else if (remainingRoom[column] < 3) {					// check for a vertical win only when the height of the column allows it
-			if (isVerticalWin(column, player.color)) {
+			if (isVerticalWin(column, player.color) > 3) {
 				std::cout << "Vertical win for " << player.color << "\n";
 				return true;
 			}
@@ -109,25 +109,25 @@ public:
 		}
 		std::cout << "\n\n\n\n\n\n";
 	}
-	bool isVerticalWin(int column, char playerColor) {
+	int isVerticalWin(int column, char playerColor) {
 		int connected = 1;
 		int temp = remainingRoom[column] + 1;
 		while (temp < 6) {
 			if (boardArray[temp][column] == playerColor) {
 				connected++;
 				if (connected == 4) {
-					return true;
+					return 4;
 
 				}
 			}
 			else {
-				return false;
+				return connected;
 			}
 			temp++;
 		}
-		return false;
+		return connected;
 	}
-	bool isHorizontalWin(int column, char playerColor) {
+	int isHorizontalWin(int column, char playerColor) {
 		int connected = 1;
 		int temp = remainingRoom[column];
 		column--;
@@ -144,15 +144,9 @@ public:
 			column++;
 		}
 		//		std::cout << "found " << connected << "connected";
-		if (connected > 3) {
-			return true;
-
-		}
-		else {
-			return false;
-		}
+		return connected;
 	}
-	bool isDDiagonalWin(int column, char playerColor) {
+	int isDDiagonalWin(int column, char playerColor) {
 		int connected = 1;								// the first item will always be "connected" so just skip searching it
 		int tempRow = remainingRoom[column] - 1;
 		int tempCol = column - 1;
@@ -173,15 +167,9 @@ public:
 			tempRow++;
 
 		}
-		if (connected > 3) {
-			return true;
-
-		}
-		else {
-			return false;
-		}
+		return connected;
 	}
-	bool isADiagonalWin(int column, char playerColor) {
+	int isADiagonalWin(int column, char playerColor) {
 		int connected = 1;								// the first item will always be "connected" so just skip searching it
 		int tempRow = remainingRoom[column] - 1;
 		int tempCol = column + 1;
@@ -202,13 +190,7 @@ public:
 			tempRow++;
 
 		}
-		if (connected > 3) {
-			return true;
-
-		}
-		else {
-			return false;
-		}
+		return connected;
 	}
 
 };
