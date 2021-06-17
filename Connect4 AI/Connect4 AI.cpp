@@ -489,24 +489,23 @@ j--;
 		}
 	}
 	int evaluateColumn(int column, Board board) {		// only pass on valid columns 
-
+		board.print();
 		int value = 0;
 		value += (aDiagonalVal(column, board));
-//		std::cout << "ascending diagonal value is " << (aDiagonalVal(column, board)) << "\n";
+		std::cout << "ascending diagonal value is " << (aDiagonalVal(column, board)) << "\n";
 
 		value += (dDiagonalVal(column, board));
-//		std::cout << "descending diagonal value is " << (dDiagonalVal(column, board)) << "\n";
+		std::cout << "descending diagonal value is " << (dDiagonalVal(column, board)) << "\n";
 
 		value += (horizontalVal(column, board));
-//		std::cout << "Horizontal value is " << (horizontalVal(column, board)) << "\n";
+		std::cout << "Horizontal value is " << (horizontalVal(column, board)) << "\n";
 
 		value += (verticalVal(column, board));
-//		std::cout << "vertical value is " << (verticalVal(column, board)) << "\n";
+		std::cout << "vertical value is " << (verticalVal(column, board)) << "\n";
 
 		value += (columnVal(column));
-//		std::cout << "column value is " << (columnVal(column)) << "\n";
-
-//		std::cout << "total value of column " << column << " is " << value << "\n";
+		std::cout << "column value is " << (columnVal(column)) << "\n";
+		std::cout << "total value of column " << column << " is " << value << "\n";
 		return value;
 	}
 public:
@@ -626,11 +625,9 @@ public:
 		int bestColumn = 3;
 		for (int i = 0; i < 7; i++) {
 			if (board.isValid(i)) {
-				Board board2;
-				board2.buildBoard(board.remainingRoom, board.boardArray, board.leastRemaining);
 				board.play(i,currentPlayer);
-				int tempVal = miniMax(board2, enemyPlayer, currentPlayer, false , depth - 1);
-
+				int tempVal = miniMax(board, enemyPlayer, currentPlayer, false , depth - 1);
+				board.unPlay(i);
 				if (tempVal >= maxTurnVal) {
 					maxTurnVal = tempVal;
 					bestColumn = i;
