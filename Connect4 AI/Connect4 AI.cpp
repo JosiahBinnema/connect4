@@ -471,23 +471,23 @@ j--;
 		}
 	}
 	int evaluateColumn(int column, Board board) {		// only pass on valid columns 
-		board.print();
+//		board.print();
 		int value = 0;
 		value += (aDiagonalVal(column, board));
-		std::cout << "ascending diagonal value is " << (aDiagonalVal(column, board)) << "\n";
+//		std::cout << "ascending diagonal value is " << (aDiagonalVal(column, board)) << "\n";
 
 		value += (dDiagonalVal(column, board));
-		std::cout << "descending diagonal value is " << (dDiagonalVal(column, board)) << "\n";
+//		std::cout << "descending diagonal value is " << (dDiagonalVal(column, board)) << "\n";
 
 		value += (horizontalVal(column, board));
-		std::cout << "Horizontal value is " << (horizontalVal(column, board)) << "\n";
+//		std::cout << "Horizontal value is " << (horizontalVal(column, board)) << "\n";
 
 		value += (verticalVal(column, board));
-		std::cout << "vertical value is " << (verticalVal(column, board)) << "\n";
+//		std::cout << "vertical value is " << (verticalVal(column, board)) << "\n";
 
 		value += (columnVal(column));
-		std::cout << "column value is " << (columnVal(column)) << "\n";
-		std::cout << "total value of column " << column << " is " << value << "\n";
+//		std::cout << "column value is " << (columnVal(column)) << "\n";
+//		std::cout << "total value of column " << column << " is " << value << "\n";
 		return value;
 	}
 public:
@@ -512,7 +512,7 @@ public:
 				}
 			}
 		}
-		std::cout << "\n\n BEST COLUMN FOUND IS  " << bestColumn << " WITH VALUE " << maxTurnVal << "\n";
+//		std::cout << "\n\n BEST COLUMN FOUND IS  " << bestColumn << " WITH VALUE " << maxTurnVal << "\n";
 		return bestColumn;
 	}
 	int evaluatePosition(Board board, Player player) {
