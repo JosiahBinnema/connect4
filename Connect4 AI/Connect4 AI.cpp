@@ -602,6 +602,74 @@ public:
 		}
 	}
 
+	int minimaxShellv2 (Board board, Player currentPlayer, Player enemyPlayer, bool isMaximizing, int depth) { // check for win
+		int bestColumn;
+		if (depth == 0) {
+			return evaluatePosition(board, currentPlayer);
+		}
+
+		if (isMaximizing) {
+			int value = -999999;
+			for (int i = 0; i < 7; i++) {
+				if (board.isValid(i)) {
+					if (board.isWin(i, currentPlayer)) {
+						std::cout << " found winning move!! ";
+						board.play(i, currentPlayer);
+						board.print();
+						board.unPlay(i);
+						return connect4value;
+					}
+					Board board2;
+					board2.buildBoard(board.remainingRoom, board.boardArray, board.leastRemaining);
+					board2.play(i, currentPlayer);
+					board2.print();
+					std::cout << " depth is " << depth << "\n";
+
+
+					int tempVal = miniMax(board2, currentPlayer, enemyPlayer, !isMaximizing, (depth - 1));
+					std::cout << "^this is an evaluated board given the value of " << tempVal << "(played in column) " << i << "\n";
+					if (tempVal > value) {
+						std::cout << "value chosen from list above is " << tempVal << " which is greater than the previous amount " << value << "\n";
+						value = tempVal;
+						bestColumn = i;
+					}
+				}
+			}
+			return bestColumn;
+		}
+		else {
+			int value = 999999;
+			for (int i = 0; i < 7; i++) {
+				if (board.isValid(i)) {
+					if (board.isWin(i, enemyPlayer)) {
+						std::cout << " found winning move!! ";
+						board.play(i, currentPlayer);
+						board.print();
+						board.unPlay(i);
+						return -connect4value;
+					}
+					Board board2;
+					board2.buildBoard(board.remainingRoom, board.boardArray, board.leastRemaining);
+					board2.play(i, enemyPlayer);
+					board2.print();
+					std::cout << " depth is " << depth << "\n";
+
+
+					int tempVal = miniMax(board2, currentPlayer, enemyPlayer, !isMaximizing, (depth - 1));
+					std::cout << "^this is an evaluated board given the value of " << tempVal << "(played in column) " << i << "\n";
+					if (tempVal < value) {
+						std::cout << "value chosen from list above is " << tempVal << " which is less than the previous amount " << value << "\n";
+						value = tempVal;
+						bestColumn = i;
+					}
+				}
+			}
+			return bestColumn;
+		}
+	}
+
+
+
 	int miniMaxShell(Board board, Player currentPlayer, Player enemyPlayer, int depth) { // person calling this will always be maximizing. Depth must be >=1 (this is for the AILevels feature;
 		int maxTurnVal = -999999;
 		int bestColumn = 3;
@@ -658,7 +726,7 @@ int getAILevel() {
 int getAIInput(Board board, Computer computer, Player player, int level) {
 	int input;
 	if (level > 2 && level <= 10) {
-		input = computer.miniMaxShell(board, computer, player, level);
+		input = computer.minimaxShellv2(board, computer, player, true, level);
 		std::cout << " level " << level << " AI played in column " << input;
 	} else if (level == 2) {
 		input = level2Move(board, computer, player);
