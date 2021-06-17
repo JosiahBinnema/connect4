@@ -617,7 +617,7 @@ public:
 						board.play(i, currentPlayer);
 						board.print();
 						board.unPlay(i);
-						return connect4value;
+						return i;
 					}
 					Board board2;
 					board2.buildBoard(board.remainingRoom, board.boardArray, board.leastRemaining);
@@ -646,7 +646,7 @@ public:
 						board.play(i, currentPlayer);
 						board.print();
 						board.unPlay(i);
-						return -connect4value;
+						return i;
 					}
 					Board board2;
 					board2.buildBoard(board.remainingRoom, board.boardArray, board.leastRemaining);
