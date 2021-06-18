@@ -73,8 +73,9 @@ public:
 			leastRemaining = remainingRoom[column];
 		}
 	}
-	void unPlay(int column) {
+	void unPlay(int column) {										
 		boardArray[remainingRoom[column]][column] = ' ';
+		remainingRoom[column]++;
 	}
 	bool isWin(int column, Player player) {			//should be called before the move has been made on the board.
 
@@ -548,23 +549,23 @@ public:
 			for (int i = 0; i < 7; i++) {
 				if (board.isValid(i)) {
 					if (board.isWin(i, currentPlayer)) {
-//						std::cout << " found winning move!! ";
-//						board.play(i, currentPlayer);
-//						board.print();
-//						board.unPlay(i);
+						std::cout << " found winning move!! ";
+						board.play(i, currentPlayer);
+						board.print();
+						board.unPlay(i);
 						return connect4value;
 					}
 					Board board2;
 					board2.buildBoard(board.remainingRoom, board.boardArray, board.leastRemaining);
 					board2.play(i, currentPlayer);
-//									board2.print();
-//									std::cout << " depth is " << depth << "\n";
+									board2.print();
+									std::cout << " depth is " << depth << "\n";
 
 
 					int tempVal = miniMax(board2,  currentPlayer, enemyPlayer, !isMaximizing, (depth - 1));
-//							std::cout << "^this is an evaluated board given the value of " << tempVal << "(played in column) " << i << "\n";
+							std::cout << "^this is an evaluated board given the value of " << tempVal << "(played in column) " << i << "\n";
 					if (tempVal > value) {
-//						std::cout << "value chosen from list above is " << tempVal << " which is greater than the previous amount " << value << "\n";
+						std::cout << "value chosen from list above is " << tempVal << " which is greater than the previous amount " << value << "\n";
 						value = tempVal;
 						bestColumn = i;
 					}
@@ -576,23 +577,23 @@ public:
 			for (int i = 0; i < 7; i++) {
 				if (board.isValid(i)) {
 					if (board.isWin(i, enemyPlayer)) {
-//						std::cout << " found winning move!! ";
-//						board.play(i, currentPlayer);
-//						board.print();
-//						board.unPlay(i);
+						std::cout << " found winning move!! ";
+						board.play(i, currentPlayer);
+						board.print();
+						board.unPlay(i);
 						return -connect4value;
 					}
 					Board board2;
 					board2.buildBoard(board.remainingRoom, board.boardArray, board.leastRemaining);
 					board2.play(i, enemyPlayer);
-//									board2.print();
-//									std::cout << " depth is " << depth << "\n";
+									board2.print();
+									std::cout << " depth is " << depth << "\n";
 
 
 					int tempVal = miniMax(board2,  currentPlayer, enemyPlayer, !isMaximizing, (depth - 1));
-//									std::cout << "^this is an evaluated board given the value of " << tempVal << "(played in column) " << i << "\n";
+									std::cout << "^this is an evaluated board given the value of " << tempVal << "(played in column) " << i << "\n";
 					if (tempVal < value) {
-//						std::cout << "value chosen from list above is " << tempVal << " which is less than the previous amount " << value << "\n";
+						std::cout << "value chosen from list above is " << tempVal << " which is less than the previous amount " << value << "\n";
 						value = tempVal;
 						bestColumn = i;
 					}
@@ -604,36 +605,32 @@ public:
 
 	int minimaxShellv2(Board board, Player currentPlayer, Player enemyPlayer, bool isMaximizing, int depth) { // check for win
 		int bestColumn;
-		if (depth == 0) {
-			return evaluatePosition(board, currentPlayer);
-		}
 
 		int value = -999999;
 		for (int i = 0; i < 7; i++) {
 			if (board.isValid(i)) {
 				if (board.isWin(i, currentPlayer)) {
-					//						std::cout << " found winning move!! ";
-					//						board.play(i, currentPlayer);
-					//						board.print();
-					//						board.unPlay(i);
+					std::cout << "Shell found a winning move next move!";
+
 					return i;
 				}
-				Board board2;
-				board2.buildBoard(board.remainingRoom, board.boardArray, board.leastRemaining);
-				board2.play(i, currentPlayer);
-				//					board2.print();
-				//					std::cout << " depth is " << depth << "\n";
+//				Board board2;
+//				board2.buildBoard(board.remainingRoom, board.boardArray, board.leastRemaining);
+				board.play(i, currentPlayer);
 
 
-				int tempVal = miniMax(board2, currentPlayer, enemyPlayer, !isMaximizing, (depth - 1));
-				//					std::cout << "^this is an evaluated board given the value of " << tempVal << "(played in column) " << i << "\n";
+				int tempVal = miniMax(board, currentPlayer, enemyPlayer, !isMaximizing, (depth - 1));
+				board.print();
+						std::cout << "Shell evaluated this board a value of " << tempVal << "(played in column) " << i << "\n";
+				board.unPlay(i);
 				if (tempVal > value) {
-					//						std::cout << "value chosen from list above is " << tempVal << " which is greater than the previous amount " << value << "\n";
+					std::cout << "Shell has found value " << tempVal << " which is greater than the previous amount " << value << "\n";
 					value = tempVal;
 					bestColumn = i;
 				}
 			}
 		}
+		std::cout <<" minimax shell recieved value " << value << " as the best value, this means we should play in column " << bestColumn;
 		return bestColumn;
 	}
 	int miniMaxShell(Board board, Player currentPlayer, Player enemyPlayer, int depth) { // person calling this will always be maximizing. Depth must be >=1 (this is for the AILevels feature;
@@ -735,7 +732,7 @@ int main() {
 
 			if (currentPlayer.isAI) {
 //				input = getAIInput(board, currentPlayer, enemyPlayer, computerLevel);			//TODO: Change computer level to a computer variable, then set it there and change this back to 
-				if (counter < 2) {											// why the frick do I have to do this
+				if (counter < 2 && computerLevel !=0) {											// why the frick do I have to do this
 					input = 3;
 				}
 				else {
