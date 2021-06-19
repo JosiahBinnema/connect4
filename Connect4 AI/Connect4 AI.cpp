@@ -676,7 +676,7 @@ int getPlayerInput(Board board, Player player) {
 }
 int getAILevel() {
 	int input;
-	std::cout << "What level AI (1-10) would you like to face? levels higher than 6 may slow down your computer. Enter 0 to play versus another person locally \n";
+	std::cout << "What level AI (1-10) would you like to face? I'd reccomend starting with 6, 7 is a bit slow to play. Enter 0 to play versus another person locally \n";
 	std::cin >> input;
 	while (!(input < 11 && input >= 0)) {
 		std::cout << "Please enter a level between 1-10, or 0 to play locally";
