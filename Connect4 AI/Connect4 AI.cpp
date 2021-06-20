@@ -542,11 +542,10 @@ public:
 		return bestColumn;
 	}
 
-	int miniMax(Board board, Player currentPlayer, Player enemyPlayer, bool isMaximizing, int depth) { // check for win
+	int miniMax(Board board, Player currentPlayer, Player enemyPlayer, bool isMaximizing, int depth) {
 		if (depth == 0) {
 			return evaluatePosition(board, currentPlayer);
 		}
-
 
 		if (isMaximizing) {
 			int value = -999999;
@@ -595,36 +594,34 @@ public:
 	}
 
 
-	int minimaxShellv2(Board board, Player currentPlayer, Player enemyPlayer, bool isMaximizing, int depth) { // check for win
+	int minimaxShellv2(Board board, Player currentPlayer, Player enemyPlayer, bool isMaximizing, int depth) { // this is what should be called. It's the first/last iteration of minimax that converts value to column
 		int bestColumn;
-
 		int value = -999999;
 		for (int i = 0; i < 7; i++) {
 			if (board.isValid(i)) {
-/*				if (board.isWin(i, currentPlayer)) {
-					std::cout << "Shell found a winning move next move!";
-					return i;
-				}*/
-//				Board board2;
-//				board2.buildBoard(board.remainingRoom, board.boardArray, board.leastRemaining);
 				board.play(i, currentPlayer);
+				if (board.isWin(i, currentPlayer)) {
+					if (connect4value > value) {
+						value = connect4value;
+						bestColumn = i;
+					}
+				}
+				else {
+					int tempVal = miniMax(board, currentPlayer, enemyPlayer, !isMaximizing, (depth - 1));
 
-
-				int tempVal = miniMax(board, currentPlayer, enemyPlayer, !isMaximizing, (depth - 1));
-//				board.print();
-//						std::cout << "Shell evaluated this board a value of " << tempVal << "(played in column) " << i << "\n";
-				board.unPlay(i);
-				if (tempVal > value) {
-//					std::cout << "Shell has found value " << tempVal << " which is greater than the previous amount " << value << "\n";
-					value = tempVal;
-					bestColumn = i;
+					//						std::cout << "Shell evaluated this board a value of " << tempVal << "(played in column) " << i << "\n";
+					board.unPlay(i);
+					if (tempVal > value) {
+						//					std::cout << "Shell has found value " << tempVal << " which is greater than the previous amount " << value << "\n";
+						value = tempVal;
+						bestColumn = i;
+					}
 				}
 			}
 		}
 		std::cout << " Computer level " << depth << " evaluates position as " << value << "\n";
 		return bestColumn;
 	}
-
 };
 
 
@@ -740,5 +737,10 @@ int main() {
 				counter = 0;
 			}
 			board.print();
+			if (counter == 42) {
+				std::cout << "It's a draw!";
+				board.clear();
+				counter = 0;
+			}
 		}
 	};
