@@ -1,6 +1,9 @@
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
+#include <chrono>
+using namespace std;
+using namespace std::chrono;
 
 class Player {			//should be private with get/set
 public:
@@ -542,11 +545,12 @@ public:
 		return bestColumn;
 	}
 
-	int miniMax(Board board, Player currentPlayer, Player enemyPlayer, bool isMaximizing, int depth) {
+
+	int miniMax(Board board, Player currentPlayer, Player enemyPlayer, bool isMaximizing, int depth, int alpha, int beta) { // check for win
+
 		if (depth == 0) {
 			return evaluatePosition(board, currentPlayer);
 		}
-
 		if (isMaximizing) {
 			int value = -999999;
 			for (int i = 0; i < 7; i++) {
@@ -554,16 +558,19 @@ public:
 					Board board2;
 					board2.buildBoard(board.remainingRoom, board.boardArray, board.leastRemaining);
 					board2.play(i, currentPlayer);
-					if (board2.isWin(i, currentPlayer)) {
+          if (board2.isWin(i, currentPlayer)) {
 						return connect4value;
+					}					
+          else {
+					int tempVal = miniMax(board2,  currentPlayer, enemyPlayer, !isMaximizing, (depth - 1), alpha, beta);
+					if (tempVal > value) {
+						value = tempVal;
 					}
-					else {
-						int tempVal = miniMax(board2, currentPlayer, enemyPlayer, !isMaximizing, (depth - 1));
-						//							std::cout << "^this is an evaluated board given the value of " << tempVal << "(played in column) " << i << "\n";
-						if (tempVal > value) {
-							//						std::cout << "value chosen from list above is " << tempVal << " which is greater than the previous amount " << value << "\n";
-							value = tempVal;
-						}
+					if (value >= beta) {
+						break;
+					}
+					if (value > alpha) {
+						alpha = value;
 					}
 				}
 			}
@@ -580,12 +587,19 @@ public:
 						return -connect4value;
 					}
 
+					int tempVal = miniMax(board2,  currentPlayer, enemyPlayer, !isMaximizing, (depth - 1), alpha, beta);
+//									std::cout << "^this is an evaluated board given the value of " << tempVal << "(played in column) " << i << "\n";
 
-					int tempVal = miniMax(board2, currentPlayer, enemyPlayer, !isMaximizing, (depth - 1));
-					//									std::cout << "^this is an evaluated board given the value of " << tempVal << "(played in column) " << i << "\n";
 					if (tempVal < value) {
 						//						std::cout << "value chosen from list above is " << tempVal << " which is less than the previous amount " << value << "\n";
 						value = tempVal;
+
+					}
+					if (value <= alpha) {
+						break;
+					}
+					if (value < beta) {
+						beta = value;
 					}
 				}
 			}
@@ -595,6 +609,7 @@ public:
 
 
 	int minimaxShellv2(Board board, Player currentPlayer, Player enemyPlayer, bool isMaximizing, int depth) { // this is what should be called. It's the first/last iteration of minimax that converts value to column
+		auto start = high_resolution_clock::now();
 		int bestColumn;
 		int value = -999999;
 		for (int i = 0; i < 7; i++) {
@@ -607,8 +622,7 @@ public:
 					}
 				}
 				else {
-					int tempVal = miniMax(board, currentPlayer, enemyPlayer, !isMaximizing, (depth - 1));
-
+					int tempVal = miniMax(board, currentPlayer, enemyPlayer, !isMaximizing, (depth - 1),-999999,999999);
 					//						std::cout << "Shell evaluated this board a value of " << tempVal << "(played in column) " << i << "\n";
 					board.unPlay(i);
 					if (tempVal > value) {
@@ -619,6 +633,10 @@ public:
 				}
 			}
 		}
+		auto stop = high_resolution_clock::now();
+		auto duration = duration_cast<microseconds>(stop - start);
+		cout << "Search time for depth " << depth << " was "
+			<< duration.count() << " microseconds" << endl;
 		std::cout << " Computer level " << depth << " evaluates position as " << value << "\n";
 		return bestColumn;
 	}
