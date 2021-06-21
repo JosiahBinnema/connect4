@@ -79,29 +79,7 @@ public:
 	void unPlay(int column) {										
 		boardArray[remainingRoom[column]][column] = ' ';
 		remainingRoom[column]++;
-	}
-	bool isWin(int column, Player player) {			//should be called before the move has been made on the board.
-
-		if (isDDiagonalWin(column, player.color) > 3) {				// check for descending diagonal win.
-//			std::cout << "Descending diagonal win for " << player.color << "\n";
-			return true;
-		}
-		else if (isADiagonalWin(column, player.color) > 3) {				// check for ascending diagonal win.
-//			std::cout << "Ascending diagonal win for " << player.color << "\n";
-			return true;
-		}
-		else if (isHorizontalWin(column, player.color) > 3) {			// check for horizontal win
-//			std::cout << "Horizontal win for " << player.color << "\n";
-			return true;
-		}
-		else if (remainingRoom[column] < 3) {					// check for a vertical win only when the height of the column allows it
-			if (isVerticalWin(column, player.color) > 3) {
-//				std::cout << "Vertical win for " << player.color << "\n";
-				return true;
-			}
-		}
-		return false;
-	}
+	}	
 	void print() {
 		std::cout << "\n  0  1  2  3  4  5  6 ";
 		for (int i = 0; i < 6; i++) {
@@ -114,8 +92,8 @@ public:
 		std::cout << "\n\n\n\n\n\n";
 	}
 	int isVerticalWin(int column, char playerColor) {
-		int connected = 1;
-		int temp = remainingRoom[column] + 1;
+		int connected = 0;
+		int temp = remainingRoom[column];
 		while (temp < 6) {
 			if (boardArray[temp][column] == playerColor) {
 				connected++;
@@ -132,28 +110,29 @@ public:
 		return connected;
 	}
 	int isHorizontalWin(int column, char playerColor) {
-		int connected = 1;
+		int connected = 0;
 		int temp = remainingRoom[column];
+//		std::cout << " checking in column" << column << "\n";
 		column--;
 
 		while (column >= 0 && boardArray[temp][column] == playerColor) {
-			//			std::cout << "looking left at position " << temp << " " << column << "    " << board[temp][column] << " matches " << player.color << "\n";
+	//					std::cout << "looking left at position " << temp << " " << column << "    " << this->boardArray[temp][column] << " matches " << playerColor << "\n";
 			connected++;
 			column--;
 		}
 		column = column + connected + 1;
 		while (column <= 6 && boardArray[temp][column] == playerColor) {
-			//			std::cout << "looking right at position " << temp << " " << column << "   " << board[temp][column] << " matches " << player.color << "\n";
+	//					std::cout << "looking right at position " << temp << " " << column << "   " << this->boardArray[temp][column] << " matches " << playerColor << "\n";
 			connected++;
 			column++;
 		}
-		//		std::cout << "found " << connected << "connected";
+//				std::cout << "found " << connected << "connected \n";
 		return connected;
 	}
 	int isDDiagonalWin(int column, char playerColor) {
-		int connected = 1;								// the first item will always be "connected" so just skip searching it
-		int tempRow = remainingRoom[column] - 1;
-		int tempCol = column - 1;
+		int connected = 0;								// the first item will always be "connected" so just skip searching it
+		int tempRow = remainingRoom[column];
+		int tempCol = column ;
 
 		while (tempCol >= 0 && tempRow >= 0 && boardArray[tempRow][tempCol] == playerColor) {
 			connected++;
@@ -174,9 +153,9 @@ public:
 		return connected;
 	}
 	int isADiagonalWin(int column, char playerColor) {
-		int connected = 1;								// the first item will always be "connected" so just skip searching it
-		int tempRow = remainingRoom[column] - 1;
-		int tempCol = column + 1;
+		int connected = 0;								// the first item will always be "connected" so just skip searching it
+		int tempRow = remainingRoom[column];
+		int tempCol = column;
 
 		while (tempCol <= 6 && tempRow >= 0 && boardArray[tempRow][tempCol] == playerColor) {
 			connected++;
@@ -196,7 +175,32 @@ public:
 		}
 		return connected;
 	}
+	bool isWin(int column, Player player) {			//should be called after the move has been made on the board.
 
+		if (isDDiagonalWin(column, player.color) > 3) {				// check for descending diagonal win.
+//			std::cout << "Descending diagonal win for " << player.color << "\n";
+//			this->print();
+			return true;
+		}
+		else if (isADiagonalWin(column, player.color) > 3) {				// check for ascending diagonal win.
+//			std::cout << "Ascending diagonal win for " << player.color << "\n";
+//			this->print();
+			return true;
+		}
+		else if (isHorizontalWin(column, player.color) > 3) {			// check for horizontal win
+//			std::cout << "Horizontal win for " << player.color << "\n";
+//			this->print();
+			return true;
+		}
+		else if (remainingRoom[column] < 3) {					// check for a vertical win only when the height of the column allows it
+			if (isVerticalWin(column, player.color) > 3) {
+//				std::cout << "Vertical win for " << player.color << "\n";
+//				this->print();
+				return true;
+			}
+		}
+		return false;
+	}
 };
 
 class Computer : public Player {
@@ -541,7 +545,9 @@ public:
 		return bestColumn;
 	}
 
+
 	int miniMax(Board board, Player currentPlayer, Player enemyPlayer, bool isMaximizing, int depth, int alpha, int beta) { // check for win
+
 		if (depth == 0) {
 			return evaluatePosition(board, currentPlayer);
 		}
@@ -552,6 +558,10 @@ public:
 					Board board2;
 					board2.buildBoard(board.remainingRoom, board.boardArray, board.leastRemaining);
 					board2.play(i, currentPlayer);
+          if (board2.isWin(i, currentPlayer)) {
+						return connect4value;
+					}					
+          else {
 					int tempVal = miniMax(board2,  currentPlayer, enemyPlayer, !isMaximizing, (depth - 1), alpha, beta);
 					if (tempVal > value) {
 						value = tempVal;
@@ -562,27 +572,28 @@ public:
 					if (value > alpha) {
 						alpha = value;
 					}
-					
 				}
 			}
 			return value;
-		} else {
+		}
+		else {
 			int value = 999999;
 			for (int i = 0; i < 7; i++) {
 				if (board.isValid(i)) {
-
 					Board board2;
 					board2.buildBoard(board.remainingRoom, board.boardArray, board.leastRemaining);
 					board2.play(i, enemyPlayer);
-//									board2.print();
-//									std::cout << " depth is " << depth << "\n";
-
+					if (board2.isWin(i, enemyPlayer)) {
+						return -connect4value;
+					}
 
 					int tempVal = miniMax(board2,  currentPlayer, enemyPlayer, !isMaximizing, (depth - 1), alpha, beta);
 //									std::cout << "^this is an evaluated board given the value of " << tempVal << "(played in column) " << i << "\n";
+
 					if (tempVal < value) {
-//						std::cout << "value chosen from list above is " << tempVal << " which is less than the previous amount " << value << "\n";
+						//						std::cout << "value chosen from list above is " << tempVal << " which is less than the previous amount " << value << "\n";
 						value = tempVal;
+
 					}
 					if (value <= alpha) {
 						break;
@@ -595,6 +606,7 @@ public:
 			return value;
 		}
 	}
+
 
 	int minimaxShellv2(Board board, Player currentPlayer, Player enemyPlayer, bool isMaximizing, int depth) { // this is what should be called. It's the first/last iteration of minimax that converts value to column
 		auto start = high_resolution_clock::now();
@@ -611,7 +623,6 @@ public:
 				}
 				else {
 					int tempVal = miniMax(board, currentPlayer, enemyPlayer, !isMaximizing, (depth - 1),-999999,999999);
-
 					//						std::cout << "Shell evaluated this board a value of " << tempVal << "(played in column) " << i << "\n";
 					board.unPlay(i);
 					if (tempVal > value) {
@@ -629,7 +640,6 @@ public:
 		std::cout << " Computer level " << depth << " evaluates position as " << value << "\n";
 		return bestColumn;
 	}
-
 };
 
 
@@ -657,7 +667,7 @@ int getPlayerInput(Board board, Player player) {
 }
 int getAILevel() {
 	int input;
-	std::cout << "What level AI (1-10) would you like to face? levels higher than 6 may slow down your computer. Enter 0 to play versus another person locally \n";
+	std::cout << "What level AI (1-10) would you like to face? I'd reccomend starting with 6, 7 is a bit slow to play. Enter 0 to play versus another person locally \n";
 	std::cin >> input;
 	while (!(input < 11 && input >= 0)) {
 		std::cout << "Please enter a level between 1-10, or 0 to play locally";
@@ -745,5 +755,10 @@ int main() {
 				counter = 0;
 			}
 			board.print();
+			if (counter == 42) {
+				std::cout << "It's a draw!";
+				board.clear();
+				counter = 0;
+			}
 		}
 	};
