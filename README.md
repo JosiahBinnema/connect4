@@ -22,7 +22,9 @@ This is my best attempt at a connect 4 ai (just for fun). I decided to stay away
 
 
 This is a work in progress, whenever I have spare time. ~~I plan to implement the AI by evauating every position, then choosing the best path
-Ideally I'll be able to implement Alpha-beta pruning first,~~ then I'll move on to searching good moves first, then I'll ensure it remembers positions so it doesn't reevaluate the same position twice during one search. 
+Ideally I'll be able to implement Alpha-beta pruning first,~~ then I'll move on to searching good moves first, then I'll ensure it remembers positions so it doesn't reevaluate the same position twice during one search.     
+
+This is also my first project where I will be actively using Git branching/merging/rebasing, so that will be an excellent learning opportunity!        
 
 Likely I won't get a lot of this done, but if I can make an AI that uses alpha beta pruning and can beat me in connect 4. I'll call that a *mad* win.           
 I did it! The AI is a good challenge, and something I can be proud of. I still want to improve on it because there are such mad performance gains available.
