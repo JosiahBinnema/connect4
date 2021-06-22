@@ -201,6 +201,7 @@ public:
 class Computer : public Player {
 private:
 	//AI values:
+	int columnPriority[7] = { 3,4,2,5,1,6,0 };
 	int centerValue = 6;
 	int middleValue = 3;
 	int edgePenalty = -1;
@@ -220,6 +221,20 @@ private:
 		}
 		else {
 			return connect1Value;
+		}
+	}
+	void printEvaluation(int depth, int value) {
+		if (value == 999999 || value == -999999) {
+			std::cout << " Computer level " << depth << " thinks this is a draw \n";
+		}
+		else if (value == 1000) {
+			std::cout << " Computer level " << depth << " thinks it has a sure win! \n";
+		}
+		else if (value == -1000) {
+			std::cout << " Computer level " << depth << " thinks you have a sure win! \n";
+		}
+		else {
+			std::cout << " Computer level " << depth << " evaluates position as " << value << "\n";
 		}
 	}
 	int verticalVal(int column, Board board) {						//  Vertical value for connections. (All ___Val are clones of each other)
@@ -498,14 +513,16 @@ j--;
 		if (depth == 0) {
 			return evaluatePosition(board, currentPlayer);
 		}
+		int column;
 		if (isMaximizing) {
 			int value = -999999;
 			for (int i = 0; i < 7; i++) {
-				if (board.isValid(i)) {
+				column = columnPriority[i];
+				if (board.isValid(column)) {
 					Board board2;
 					board2.buildBoard(board.remainingRoom, board.boardArray, board.leastRemaining);
-					board2.play(i, currentPlayer);
-					if (board2.isWin(i, currentPlayer)) {
+					board2.play(column, currentPlayer);
+					if (board2.isWin(column, currentPlayer)) {
 						return connect4value;
 					}
 					else {
@@ -527,11 +544,12 @@ j--;
 		else {
 			int value = 999999;
 			for (int i = 0; i < 7; i++) {
-				if (board.isValid(i)) {
+				column = columnPriority[i];
+				if (board.isValid(column)) {
 					Board board2;
 					board2.buildBoard(board.remainingRoom, board.boardArray, board.leastRemaining);
-					board2.play(i, enemyPlayer);
-					if (board2.isWin(i, enemyPlayer)) {
+					board2.play(column, enemyPlayer);
+					if (board2.isWin(column, enemyPlayer)) {
 						return -connect4value;
 					}
 
@@ -604,32 +622,31 @@ public:
 		auto start = high_resolution_clock::now();
 		int bestColumn;
 		int value = -999999;
+		int column;
 		for (int i = 0; i < 7; i++) {
-			if (board.isValid(i)) {
-				board.play(i, currentPlayer);
-				if (board.isWin(i, currentPlayer)) {
-					if (connect4value > value) {
-						value = connect4value;
-						return i;
-					}
+			column = columnPriority[i];
+			if (board.isValid(column)) {
+				board.play(column, currentPlayer);
+				if (board.isWin(column, currentPlayer)) {
+					value = connect4value;
+					return column;
 				}
 				else {
 					int tempVal = miniMax(board, currentPlayer, enemyPlayer, !isMaximizing, (depth - 1), -999999, 999999);
 					//						std::cout << "Shell evaluated this board a value of " << tempVal << "(played in column) " << i << "\n";
-					board.unPlay(i);
+					board.unPlay(column);
 					if (tempVal > value) {
 						//					std::cout << "Shell has found value " << tempVal << " which is greater than the previous amount " << value << "\n";
 						value = tempVal;
-						bestColumn = i;
+						bestColumn = column;
 					}
 				}
 			}
 		}
 		auto stop = high_resolution_clock::now();
 		auto duration = duration_cast<microseconds>(stop - start);
-		cout << "Search time for depth " << depth << " was "
-			<< duration.count() << " microseconds" << endl;
-		std::cout << " Computer level " << depth << " evaluates position as " << value << "\n";
+		cout << "Search time for depth " << depth << " was " << duration.count() << " microseconds" << endl;
+		printEvaluation(depth, value);
 		return bestColumn;
 	}
 };
@@ -657,7 +674,7 @@ int getPlayerInput(Board board, Player player) {
 }
 int getAILevel() {
 	int input;
-	std::cout << "What level AI (1-10) would you like to face? I'd reccomend starting with 6, 7 is a bit slow to play. Enter 0 to play versus another person locally \n";
+	std::cout << "What level AI (1-10) would you like to face? I'd reccomend starting with 8, 9 is a bit slow to play. Enter 0 to play versus another person locally \n";
 	std::cin >> input;
 	while (!(input < 11 && input >= 0)) {
 		std::cout << "Please enter a level between 1-10, or 0 to play locally";
