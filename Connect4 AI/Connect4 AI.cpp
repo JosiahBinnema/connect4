@@ -227,11 +227,11 @@ private:
 		if (value == 999999 || value == -999999) {
 			std::cout << " Computer level " << depth << " thinks this is a draw \n";
 		}
-		else if (value == 1000) {
-			std::cout << " Computer level " << depth << " thinks it has a sure win! \n";
+		else if (value >= 1000) {
+			std::cout << " Computer level " << depth << " thinks it has a sure win!\n";
 		}
-		else if (value == -1000) {
-			std::cout << " Computer level " << depth << " thinks you have a sure win! \n";
+		else if (value <= -1000) {
+			std::cout << " Computer level " << depth << " thinks you have a sure win!\n";
 		}
 		else {
 			std::cout << " Computer level " << depth << " evaluates position as " << value << "\n";
@@ -523,7 +523,7 @@ j--;
 					board2.buildBoard(board.remainingRoom, board.boardArray, board.leastRemaining);
 					board2.play(column, currentPlayer);
 					if (board2.isWin(column, currentPlayer)) {
-						return connect4value;
+						return connect4value + depth;	//prioritize wins that are closer to now
 					}
 					else {
 						int tempVal = miniMax(board2, currentPlayer, enemyPlayer, !isMaximizing, (depth - 1), alpha, beta);
@@ -550,7 +550,7 @@ j--;
 					board2.buildBoard(board.remainingRoom, board.boardArray, board.leastRemaining);
 					board2.play(column, enemyPlayer);
 					if (board2.isWin(column, enemyPlayer)) {
-						return -connect4value;
+						return -connect4value - depth;
 					}
 
 					int tempVal = miniMax(board2, currentPlayer, enemyPlayer, !isMaximizing, (depth - 1), alpha, beta);
