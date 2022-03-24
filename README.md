@@ -43,12 +43,14 @@ June 17 - I got my minimax stuff working, but it's super weird when it gets to t
 
 June 19 - rewrote the isWin() function so that it goes after the move is played, and now everything works great. Just adding like 6 comparisons per evaluation though...
 
-June 20 - I added alpha beta pruning in like 5 minutes and search times are down enough to reasonably search to depth 8 (607815 microseconds for first move). I'm halting development on this project in favor of some other things I have to do, but I might revisit it
+June 20 - I added alpha beta pruning in like 5 minutes and search times are down enough to reasonably search to depth 8 (607815 microseconds for first move). I'm halting development on this project in favor of some other things I have to do, but I might revisit it  
+
+March 20, 2022 - Fixed where the bot gives up if it thinks you're going to win. Also started learning hashmaps for the next optimization, but 2d char array hashmaps might be harder than ints? Only time will tell.  
 
 ### TO DO:
 - [X] Minimax Algorithm implementation
 - [X] Alpha-Beta Pruning
-- [ ] Evaluate "best" moves first. I could just search from middle-out, and that would save a ton of search time when combined with alpha-beta pruning
+- [X] Evaluate "best" moves first. I could just search from middle-out, and that would save a ton of search time when combined with alpha-beta pruning
 - [ ] Create a reference table to make sure we don't evaluate the same thing twice. This would give massive time savings because you end up double/triple or more evaluating positions because connect 4 is like that...
 - [ ] Multi-threading would give me a massive boost in performance, but I have a class on that next semester, so I'll likely do that after.
 - [ ] Small code optimizations like removing a lot of unnecessary faff in the functions, and adding a darn constructor to the Board class... I also think it would be fun to have an option to have two AI play against each other. Then you could have a little screen saver of something you wrote :)
