@@ -8,7 +8,7 @@ The .exe file should be the most recent working version. Your computer will warn
 Only enter integers into the program
 
 Choose an AI level  
-0 - Play versus another person
+0 - Play versus another person  
 1 - Play versus my first attempt at intelligence   
 2 - Play versus my second attempt at intelligence   
 3+ - Play versus a bot that searches future moves and tries to choose the best. The bot's search depth is equal to its level. Exceeding level 8 will make the game run slowly. 
